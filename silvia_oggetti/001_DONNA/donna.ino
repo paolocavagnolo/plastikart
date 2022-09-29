@@ -33,34 +33,12 @@ void setup() {
 
   delay(500);
 
-  for (i=0;i<NUMPIXELS;i++){
-    for (uint8_t w = 0; w<NBEAM; w++) {
-      beam0(i-(LBEAM+DBEAM+1)*w);
-    }
-    pixels.show();
-  
-    delay(DTIME);
-  }
-  
 }
 
 uint8_t intensity = 0;
 uint8_t xx = 1;
 
 void loop() {
-
-  for (uint8_t w = 0; w<NBEAM; w++) {
-    beam(i-(LBEAM+DBEAM+1)*w);
-  }
-  pixels.show();
-
-  if (i>NUMPIXELS) {
-    i = 0;
-  }
-  else {
-    i++;
-    delay(DTIME);
-  }
 
   intensity = intensity + xx;
   
