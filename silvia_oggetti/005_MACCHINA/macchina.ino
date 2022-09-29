@@ -1,5 +1,5 @@
 #define RR1 7
-#define RR2 8
+#define RR2 10
 #define RR3 3
 #define RR4 4
 #define RR5 9
@@ -30,6 +30,15 @@ void setup() {
   myservo1.attach(6);
   myservo2.attach(5);
 
+  digitalWrite(RR1,HIGH);
+  digitalWrite(RR2,HIGH);
+  digitalWrite(RR3,HIGH);
+  digitalWrite(RR4,HIGH);
+  digitalWrite(RR5,HIGH);
+  digitalWrite(RR6,HIGH);
+  digitalWrite(RR7,HIGH);
+  digitalWrite(RR8,HIGH);
+
 }
 
 uint8_t pos1 = 93;
@@ -37,13 +46,13 @@ uint8_t pos2 = 92;
 
 void loop() {
   // put your main code here, to run repeatedly:
-  digitalWrite(RR1,HIGH);
-  digitalWrite(RR2,HIGH);
+  digitalWrite(RR1,LOW);
+  digitalWrite(RR2,LOW);
 
   delay(5000);
 
-  digitalWrite(RR1,LOW);
-  digitalWrite(RR2,LOW);
+  digitalWrite(RR1,HIGH);
+  digitalWrite(RR2,HIGH);
 
   delay(2000);
  
