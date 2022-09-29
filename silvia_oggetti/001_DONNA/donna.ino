@@ -6,7 +6,7 @@
 #endif
 #define PIN        6 
 
-#define NUMPIXELS 155 // Popular NeoPixel ring size
+#define NUMPIXELS 180 // Popular NeoPixel ring size
 #define LEN 20
 
 #define DTIME 90
@@ -33,6 +33,15 @@ void setup() {
 
   delay(500);
 
+  for (i=0;i<NUMPIXELS;i++){
+    for (uint8_t w = 0; w<NBEAM; w++) {
+      beam0(i-(LBEAM+DBEAM+1)*w);
+    }
+    pixels.show();
+  
+    delay(DTIME);
+  }
+  
 }
 
 uint8_t intensity = 0;
@@ -40,23 +49,19 @@ uint8_t xx = 1;
 
 void loop() {
 
-  intensity = intensity + xx;
-  
-  if (intensity > 255) {
-    xx = -1;
-    intensity = 254;
+  for (uint8_t w = 0; w<NBEAM; w++) {
+    beam(i-(LBEAM+DBEAM+1)*w);
   }
-  else if (intensity < 1) {
-    xx = 1;
-    intensity = 0;
-  }
-  
-  for (uint8_t k = 155; k < 180; k++) {
-    pixels.setPixelColor(k, pixels.Color(255,0,0));
-  }
-  
   pixels.show();
-  
+
+  if (i>NUMPIXELS) {
+    i = 0;
+  }
+  else {
+    i++;
+    delay(DTIME);
+  }
+ 
 }
 
 void beam(int x) {
