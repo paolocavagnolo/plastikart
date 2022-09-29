@@ -36,15 +36,16 @@ uint8_t pos1 = 93;
 uint8_t pos2 = 92;
 
 void loop() {
-
+  // put your main code here, to run repeatedly:
   digitalWrite(R1,HIGH);
-  digitalWrite(R1,HIGH);
+  digitalWrite(R2,HIGH);
 
   delay(5000);
 
-  digitalWrite(R2,LOW);
+  digitalWrite(R1,LOW);
   digitalWrite(R2,LOW);
 
   delay(2000);
+
 
 }
