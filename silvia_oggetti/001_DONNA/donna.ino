@@ -74,7 +74,7 @@ void loop() {
   }
   
   for (uint8_t k = 155; k < 180; k++) {
-    pixels.setPixelColor(k, pixels.Color(intensity,0,0));
+    pixels.setPixelColor(k, pixels.Color(255,0,0));
   }
   
   pixels.show();
