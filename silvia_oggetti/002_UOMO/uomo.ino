@@ -6,14 +6,14 @@
 #endif
 #define PIN  6 
 
-#define NUMPIXELS 119 // Popular NeoPixel ring size
+#define NUMPIXELS 130 // Popular NeoPixel ring size
 #define LEN 20
 
-uint8_t valD[] = {90,10,180,20,120};
+uint8_t valD[] = {90,45,130,30,100};
 uint8_t DTIME = 90;
 
 #define LBEAM 3
-#define DBEAM 1
+#define DBEAM 3 //1
 #define NBEAM 180/(LBEAM+DBEAM+1)
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -65,7 +65,7 @@ void loop() {
     delay(DTIME);
   }
 
-  if ((millis() - dtt) > 5000) {
+  if ((millis() - dtt) > 7000) {
     dtt = millis();
     DTIME = valD[kk];
     if (kk == 4) {
