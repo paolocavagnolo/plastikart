@@ -1,0 +1,18 @@
+# LISTA CANALI DMX QUADRO GENERALE
+
+ 1- donna                 (DMX 30)
+ 2- uomo                  (DMX 31)
+ 3- cane                  (DMX 32)
+ 4- gatto                 (DMX 33)
+ 5- macchina              (DMX 34)
+ 6- flipper               (DMX 35)
+ 7- flipper lucine rosse  (DMX 36)
+ 8- razzo                 (DMX 37)
+ 9- luna                  (DMX 38)
+ 10- stampante            (DMX 39)
+ 11- corvo                (DMX 40)
+ 12- gelato vSX aperta    (DMX 41)
+ 13- gelato vSX chiusa    (DMX 42)
+ 14- gelato vDX aperta    (DMX 43)
+ 15- gelato vDX chiusa    (DMX 44)
+ 16- riserva              (DMX 45)
