@@ -1,48 +1,65 @@
-#include <Servo.h>
+#include "AsyncServoLib.h"
 
-Servo zampa; // orecchie
-Servo coda; // collo
+AsyncServo zampa;
+AsyncServo coda;
 
-int pos = 0;    // variable to store the servo position
+void step1();
+void step2();
+void zampaSU();
+void zampaGIU();
+void staiSU();
 
-void setup() {
-  
-  coda.attach(5);
-  zampa.attach(3);
+void setup()
+{
 
-  //ZERO CHECK
-  coda.write(95);
-  zampa.write(95);
+	coda.Attach(9);
+	zampa.Attach(10);
+
+	coda.SetOutput(500, 1500, 2500);
+	zampa.SetOutput(500, 1500, 2500);
+ 
+	delay(1000);
+	coda.WriteDegree(95);
+  zampa.WriteDegree(95);
+
+  step1();
   
 }
 
-void loop() {
-  for (pos = 95; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    coda.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
+void step1() {
+  coda.MoveDegrees(50,random(500,3000),step2);
+}
+
+void step2() {
+  coda.MoveDegrees(95,random(500,3000),step1);
+}
+
+void zampaSU() {
+  zampa.MoveDegrees(150,random(500,3000),staiSU);
+}
+
+void staiSU() {
+  zampa.MoveDegrees(151,random(500,3000),zampaGIU);
+}
+
+void zampaGIU() {
+  zampa.MoveDegrees(95,random(500,3000));
+}
+
+unsigned long dt=0;
+unsigned long dur = 8000;
+
+void loop()
+{
+	delay(10);
+	coda.Update();
+  zampa.Update();
+
+  if ((millis() - dt) > dur) {
+    dt = millis();
+    dur = random(4000,8000);
+    zampaSU();
   }
-  for (pos = 180; pos >= 95; pos -= 1) { // goes from 180 degrees to 0 degrees
-    coda.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
-  }
-  for (pos = 95; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    zampa.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
-  }
-  for (pos = 180; pos >= 95; pos -= 1) { // goes from 180 degrees to 0 degrees
-    zampa.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
-  }
-  for (pos = 95; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    coda.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
-  }
-  for (pos = 180; pos >= 95; pos -= 1) { // goes from 180 degrees to 0 degrees
-    coda.write(pos);
-    delay(15);                       // waits 15 ms for the servo to reach the position
-  }
-  while(true);
+  
+
 }
