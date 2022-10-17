@@ -145,7 +145,8 @@ void loop()
 {
 
   
-  viaggiaLento(9000);
+  viaggiaLento(7000);
+  delay(20000);
   sprint(7000);
   bounce(7000);
   sprintVeloci(10000);
