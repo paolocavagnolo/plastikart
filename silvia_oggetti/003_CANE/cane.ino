@@ -96,6 +96,18 @@ void loop() {
   muoviTesta(130,95, 5);
   delay(3000);
 
+  muoviOrecchie(85,125, 5);
+  delay(100);
+  muoviOrecchie(125,85, 5);
+  muoviOrecchie(85,125, 5);
+  delay(100);
+  muoviOrecchie(125,85, 5);
+  muoviOrecchie(85,125, 5);
+  delay(100);
+  muoviOrecchie(125,85, 5);
+  muoviOrecchie(85,125, 5);
+  delay(100);
+  muoviOrecchie(125,85, 5);
   muoviOrecchie(125,85, 50);
   delay(100);
 
