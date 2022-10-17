@@ -124,8 +124,8 @@ void sprintVeloci(uint16_t durata) {
 
 void bounce(uint16_t durata) {
 
-  stepper.setMaxSpeed(7000);
-  stepper.setAcceleration(3000);
+  stepper.setMaxSpeed(3000);
+  stepper.setAcceleration(1000);
 
   unsigned long dvl = millis();
   
@@ -140,19 +140,42 @@ void bounce(uint16_t durata) {
   
 }
 
+void bounce2(uint16_t durata) {
+
+  stepper.setMaxSpeed(500);
+  stepper.setAcceleration(100);
+
+  unsigned long dvl = millis();
+  
+  while ((millis() - dvl) < durata) {
+  
+    stepper.move(100);
+    
+    stepper.run();
+  
+  }
+  
+  
+}
+
 
 void loop()
 {
 
   
-  viaggiaLento(7000);
-  delay(20000);
-  sprint(7000);
-  bounce(7000);
-  sprintVeloci(10000);
+  //viaggiaLento(7000);
+  //delay(20000);
+  //sprint(5000);
+  if (millis() < 12000) {
+    bounce(5000);
+  }
+  else {
+    viaggiaLento(20000);
+  }
+  //sprintVeloci(5000);
 
-  digitalWrite(stepEnable, HIGH);
-  delay(2000);
-  digitalWrite(stepEnable, LOW);
+  //digitalWrite(stepEnable, HIGH);
+  //delay(1000);
+  //digitalWrite(stepEnable, LOW);
 
 }
