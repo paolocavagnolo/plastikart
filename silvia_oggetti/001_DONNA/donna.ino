@@ -1,4 +1,8 @@
-//DONNA
+//FEMME
+
+#define BEAM_SPEED 70
+#define CIRC_SPEED 110
+#define VENTRE_SPEED 3
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -6,17 +10,12 @@
 #endif
 #define PIN        6
 
-#define NUMPIXELS 150 // Popular NeoPixel ring size
-#define LEN 20
+#define NUMPIXELS 180 // Popular NeoPixel ring size
+#define FLOWPIXELS 150
 
-#define DTIME 90
-#define LBEAM 3
-#define DBEAM 1
-#define NBEAM 180/(LBEAM+DBEAM+1)
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-Adafruit_NeoPixel pixels(180, PIN, NEO_GRB + NEO_KHZ800);
-
-int i;
+int i, j, w;
 
 void setup() {
 
@@ -29,138 +28,119 @@ void setup() {
   pixels.clear();
   pixels.show();
 
-  delay(500);
+  delay(100);
 
   digitalWrite(3, HIGH);
 
-  delay(500);
-
-  for (i = 0; i < NUMPIXELS; i++) {
-    for (uint8_t w = 0; w < NBEAM; w++) {
-      beam0(i - (LBEAM + DBEAM + 1)*w);
-    }
-    pixels.show();
-
-    delay(DTIME);
-  }
+  delay(100);
 
 }
 
-int intensity = 0;
-int xx = 1;
-int s = 0;
-unsigned long dt = 0;
+unsigned long dt_beam = 0;
+unsigned long dt_circ = 0;
+unsigned long dt_fade = 0;
+
+uint8_t lval = 255;
+int vval = 0;
+int x = 1;
+
+bool firstB = true;
+bool firstA = true;
 
 void loop() {
 
-  //SPENGO PANCIA
-  if (s == 0) {
-    for (i = 150; i < 180; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-    }
-    s = 1;
-  }
 
-
-  //BEAM
-  if (s == 1) {
-
-    for (uint8_t w = 0; w < NBEAM; w++) {
-      beam(i - (LBEAM + DBEAM + 1)*w);
+  if (millis() > 14000) {
+    if (firstB) {
+      pixels.clear();
+      pixels.show();
+      firstB = false;
     }
 
-    if (i > NUMPIXELS) {
-      i = 0;
-    }
-    else {
-      i++;
-      delay(DTIME);
-    }
-
-    if ((millis() - dt) > 15000) {
-      dt = millis();
-      s = 2;
-    }
+    fade();
 
   }
-
-  // SPENGO BEAM
-  if (s == 2) {
-    for (i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-    }
-    s = 3;
-  }
-
-  // PANCIA
-  if (s == 3) {
-
-    intensity = intensity + xx;
-
-    if (intensity > 255) {
-      xx = -4;
-      intensity = 254;
-    }
-    else if (intensity < 1) {
-      xx = 4;
-      intensity = 0;
+  else if (millis() > 10000) {
+    if (firstA) {
+      for (i = 0; i < FLOWPIXELS; i++) {
+        pixels.setPixelColor(i, pixels.Color(255, 0, 0));
+      }
+      pixels.show();
+      firstA = false;
     }
 
-    for (uint8_t k = 150; k < 180; k++) {
-      pixels.setPixelColor(k, pixels.Color(intensity, 0, 0));
-    }
+    circ();
 
-    Serial.println((millis() - dt));
-    if ((millis() - dt) > 10000) {
-      dt = millis();
-      s = 0;
-    }
-  }
-
-
-  pixels.show();
-  Serial.println(s);
-
-}
-
-void beam(int x) {
-
-  uint8_t j;
-
-  pixels.setPixelColor(x, pixels.Color(255, 0, 0));
-
-  for (j = 1; j < LBEAM; j++) {
-    if ((x - j) < 0) {
-      pixels.setPixelColor(NUMPIXELS + x - j, pixels.Color(255, 0, 0));
-    }
-    else {
-      pixels.setPixelColor(x - j, pixels.Color(255, 0, 0));
-    }
-  }
-  j++;
-  if ((x - j) < 0) {
-    pixels.setPixelColor(NUMPIXELS + x - j, pixels.Color(0, 0, 0));
   }
   else {
-    pixels.setPixelColor(x - j, pixels.Color(0, 0, 0));
+
+    beam();
+
   }
 
 }
 
-void beam0(int x) {
 
-  uint8_t j;
+void beam() {
+  if ((millis() - dt_beam) > BEAM_SPEED) {
+    dt_beam = millis();
 
-  pixels.setPixelColor(x, pixels.Color(255, 0, 0));
+    pixels.setPixelColor(i, pixels.Color(lval, 0, 0));
+    pixels.show();
 
-  for (j = 1; j < LBEAM; j++) {
-    if ((x - j) >= 0) {
-      pixels.setPixelColor(x - j, pixels.Color(255, 0, 0));
+    i++;
+
+    if (i > FLOWPIXELS) {
+      lval = 0;
+      i = 0;
     }
-  }
-  j++;
-  if ((x - j) >= 0) {
-    pixels.setPixelColor(x - j, pixels.Color(0, 0, 0));
-  }
 
-}a
+  }
+}
+
+void circ() {
+  if ((millis() - dt_circ) > CIRC_SPEED) {
+    dt_circ = millis();
+
+    for (w = 0; w < FLOWPIXELS; w++) {
+      if ((w+i)%5 == 0) {
+        pixels.setPixelColor(w, pixels.Color(0, 0, 0));
+      }
+      else {
+        pixels.setPixelColor(w, pixels.Color(lval, 0, 0));
+      }
+      
+    }
+    pixels.show();
+
+    i++;
+
+    if (i >= 5) {
+      i = 0;
+    }
+
+  }
+}
+
+void fade() {
+
+  if ((millis() - dt_fade) > VENTRE_SPEED) {
+
+    dt_fade = millis();
+
+    if (vval >= 255) {
+      x = -1;
+    }
+    if (vval <= 0) {
+      x = 1;
+    }
+
+    vval = vval + x;
+
+    for (j = FLOWPIXELS; j < NUMPIXELS; j++) {
+      pixels.setPixelColor(j, pixels.Color(vval, 0, 0));
+    }
+
+    pixels.show();
+  }
+}
