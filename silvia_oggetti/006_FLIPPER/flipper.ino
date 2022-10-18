@@ -1,4 +1,4 @@
-\\//FLIPPER
+//FLIPPER - VERSION 1.0
 
 #define NR 32
 
@@ -103,11 +103,17 @@ void loop() {
 
 
   delay(1000);
-  for (uint8_t j = 0; j < 50; j++) {
+  for (uint8_t j = 0; j < 24; j++) {
     caso();
     delay(150);
   }
   spegni();
+  delay(3000);
+  
+  accendi();
+  delay(1000);
+  spegni();
+  
   scalasync();
   spegni();
   scalasync();
