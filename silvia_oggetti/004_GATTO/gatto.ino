@@ -1,49 +1,60 @@
+//CAT - VERSION 1.0
+
+/*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
+ *  
+ *  
+ *  !!! IMPORTANT MOTORS LIMIT !!!
+ *  tail: min 50 - max 95
+ *  foot: min 95 - max 151
+ */
+
 #include "AsyncServoLib.h"
 
-AsyncServo zampa;
-AsyncServo coda;
+AsyncServo foot;
+AsyncServo tail;
 
-void step1();
-void step2();
-void zampaSU();
-void zampaGIU();
-void staiSU();
+void tailLEFT();
+void tailRIGHT();
+void footUP();
+void footDOWN();
+void footSTILL();
 
 void setup()
 {
 
-	coda.Attach(9);
-	zampa.Attach(10);
+  tail.Attach(9);
+  foot.Attach(10);
 
-	coda.SetOutput(500, 1500, 2500);
-	zampa.SetOutput(500, 1500, 2500);
+  tail.SetOutput(500, 1500, 2500);
+  foot.SetOutput(500, 1500, 2500);
  
-	delay(1000);
-	coda.WriteDegree(95);
-  zampa.WriteDegree(95);
+  delay(100);
+  tail.WriteDegree(95);
+  foot.WriteDegree(95);
 
-  step1();
+  tailLEFT();
+  footUP();
   
 }
 
-void step1() {
-  coda.MoveDegrees(50,random(500,3000),step2);
+void tailLEFT() {
+  tail.MoveDegrees(50,random(500,3000),tailRIGHT);
 }
 
-void step2() {
-  coda.MoveDegrees(95,random(500,3000),step1);
+void tailRIGHT() {
+  tail.MoveDegrees(95,random(500,3000),tailLEFT);
 }
 
-void zampaSU() {
-  zampa.MoveDegrees(150,random(500,3000),staiSU);
+void footUP() {
+  foot.MoveDegrees(150,random(500,3000),footSTILL);
 }
 
-void staiSU() {
-  zampa.MoveDegrees(151,random(500,3000),zampaGIU);
+void footSTILL() {
+  foot.MoveDegrees(151,random(500,3000),footDOWN);
 }
 
-void zampaGIU() {
-  zampa.MoveDegrees(95,random(500,3000));
+void footDOWN() {
+  foot.MoveDegrees(95,random(500,3000));
 }
 
 unsigned long dt=0;
@@ -51,14 +62,14 @@ unsigned long dur = 8000;
 
 void loop()
 {
-	delay(10);
-	coda.Update();
-  zampa.Update();
+  delay(10);
+  tail.Update();
+  foot.Update();
 
   if ((millis() - dt) > dur) {
     dt = millis();
     dur = random(4000,8000);
-    zampaSU();
+    footUP();
   }
   
 
