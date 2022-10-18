@@ -1,9 +1,20 @@
-//HOMME
+//HOMME - VERSION 1.0
 
-#define BEAM_SPEED 80
-#define FADE_SPEED 2
-#define CIRC_SPEED 120
-#define BRIGHT 150
+/*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
+  
+
+    3 MOMENTS:
+    0 - FLASH!
+    1 - Starts a beam of light - BEAM
+    2 - Light segments - CIRC
+    3 - Pulsing of the leds - FADE
+*/
+
+#define BEAM_SPEED 85   //50 FAST - 100 SLOW
+#define CIRC_SPEED 120  //80 FAST - 160 SLOW
+#define FADE_SPEED 2    //1 FAST  - 3 SLOW
+
+#define BRIGHT 150      //255 MAX BRIGHTNESS (ONLY DURING FADE PART)
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -15,7 +26,7 @@
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int i, j, w;
+int i, j, w, zz,hh;
 
 void setup() {
 
@@ -32,9 +43,25 @@ void setup() {
 
   digitalWrite(3, HIGH);
 
-  delay(100);
+  delay(200);
+
+  //FLASH
+
+//  for (zz = 0; zz < 1; zz++) {
+//    for (hh = 0; hh < NUMPIXELS; hh++) {
+//      pixels.setPixelColor(hh, pixels.Color(0, 0, 255));
+//    }
+//    pixels.show();
+//    delay(500);
+//    pixels.clear();
+//    pixels.show();
+//  }
+
+
 
 }
+
+
 
 unsigned long dt_beam = 0;
 unsigned long dt_fade = 0;
@@ -48,14 +75,14 @@ void loop() {
 
 
   if (millis() > 14000) {
-   
+
     fade();
 
   }
   else if (millis() > 10000) {
-    
+
     circ();
-    
+
   }
   else {
 
@@ -69,9 +96,9 @@ void loop() {
 void beam() {
   if ((millis() - dt_beam) > BEAM_SPEED) {
     dt_beam = millis();
-    
+
     pixels.setPixelColor(i, pixels.Color(0, 0, lval));
-    
+
     i++;
 
     if (i > NUMPIXELS) {
@@ -89,13 +116,13 @@ void circ() {
     dt_circ = millis();
 
     for (w = 0; w < NUMPIXELS; w++) {
-      if (((w-i)%5 == 0)) {
+      if (((w - i) % 5 == 0)) {
         pixels.setPixelColor(w, pixels.Color(0, 0, 0));
       }
       else {
         pixels.setPixelColor(w, pixels.Color(0, 0, lval));
       }
-      
+
     }
     pixels.show();
 
@@ -110,10 +137,10 @@ void circ() {
 
 void fade() {
 
-  if ((millis() - dt_fade) > FADE_SPEED) {
-    
-    dt_fade = millis();
-    
+  if ((micros() - dt_fade) > 7700) {
+
+    dt_fade = micros();
+
     if (vval >= BRIGHT) {
       x = -1;
     }
@@ -124,7 +151,7 @@ void fade() {
     vval = vval + x;
 
     for (j = 0; j < NUMPIXELS; j++) {
-      if (j%5 == 0) {
+      if (j % 5 == 0) {
         pixels.setPixelColor(j, pixels.Color(0, 0, 0));
       }
       else {
