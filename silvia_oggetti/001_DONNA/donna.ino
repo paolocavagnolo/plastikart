@@ -1,8 +1,18 @@
-//FEMME
+//FEMME - VERSION 1.0
 
-#define BEAM_SPEED 70
+/*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
+
+
+    3 MOMENTS:
+    0 - FLASH!
+    1 - Starts a beam of light - BEAM
+    2 - Light segments - CIRC
+    3 - Pulsing of the leds in the 'ventre' - VENTRE
+*/
+
+#define BEAM_SPEED 72
 #define CIRC_SPEED 110
-#define VENTRE_SPEED 3
+#define VENTRE_SPEED 2
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -15,7 +25,7 @@
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int i, j, w;
+int i, j, w, zz, hh;
 
 void setup() {
 
@@ -32,7 +42,20 @@ void setup() {
 
   digitalWrite(3, HIGH);
 
-  delay(100);
+  delay(200);
+
+  //FLASH
+
+//  for (zz = 0; zz < 1; zz++) {
+//    for (hh = 0; hh < NUMPIXELS; hh++) {
+//      pixels.setPixelColor(hh, pixels.Color(255, 0, 0));
+//    }
+//    pixels.show();
+//    delay(500);
+//    pixels.clear();
+//    pixels.show();
+//  }
+
 
 }
 
@@ -52,8 +75,13 @@ void loop() {
 
   if (millis() > 14000) {
     if (firstB) {
-      pixels.clear();
-      pixels.show();
+      for (hh = 255; hh > 0; hh--) {
+        for (zz = 0; zz < NUMPIXELS; zz++) {
+          pixels.setPixelColor(zz, pixels.Color(hh, 0, 0));
+        }
+        pixels.show();
+      }
+
       firstB = false;
     }
 
@@ -103,13 +131,13 @@ void circ() {
     dt_circ = millis();
 
     for (w = 0; w < FLOWPIXELS; w++) {
-      if ((w+i)%5 == 0) {
+      if ((w + i) % 5 == 0) {
         pixels.setPixelColor(w, pixels.Color(0, 0, 0));
       }
       else {
         pixels.setPixelColor(w, pixels.Color(lval, 0, 0));
       }
-      
+
     }
     pixels.show();
 
