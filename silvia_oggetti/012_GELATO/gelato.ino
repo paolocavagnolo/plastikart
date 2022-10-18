@@ -1,3 +1,5 @@
+//ICECREAM - VERSION 1.0
+
 #define RR1 8
 #define RR2 9
 #define RR3 10
@@ -27,7 +29,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //ATTIVA IL PRIMO
+  //activate the Orange
   
   digitalWrite(RR1, HIGH);
   digitalWrite(RR2, HIGH);
@@ -35,9 +37,9 @@ void loop() {
   digitalWrite(RR1, LOW);
   digitalWrite(RR2, HIGH);
 
-  delay(20000);
+  delay(20000); //wait 20 seconds
 
-  //ATTIVA IL SECONDO
+  //activate the Violet
 
   digitalWrite(RR3, HIGH);
   digitalWrite(RR4, HIGH);
@@ -45,10 +47,10 @@ void loop() {
   digitalWrite(RR3, LOW);
   digitalWrite(RR4, HIGH);
 
-  //ASPETTA 10 SECONDI
-  delay(20000);
+  //ASPETTA 
+  delay(60000*20); //wait 20 minute
 
-  //MANDA SEGNALE CHIUSURA A TUTTI E DUE
+  //send closing signal
   digitalWrite(RR1, HIGH);
   digitalWrite(RR2, HIGH);
 
@@ -57,7 +59,7 @@ void loop() {
   digitalWrite(RR1, HIGH);
   digitalWrite(RR2, LOW);
 
-  delay(20000);
+delay(500);
   
   digitalWrite(RR3, HIGH);
   digitalWrite(RR4, HIGH);
