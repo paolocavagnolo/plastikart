@@ -1,33 +1,46 @@
+//DOG - VERSION 1.0
+
+/*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
+ *  
+ *  
+ *  !!! IMPORTANT MOTORS LIMIT !!!
+ *  Head: min 30 - max 130
+ *  Ears: min 85 - max 125
+ */
+
 #include <Servo.h>
 
-Servo orecchie; // orecchie
-Servo collo; // collo
+#define minEar 85
+#define maxEar 125
+
+Servo Ears; // Ears
+Servo Head; // Head
 
 int pos = 0;    // variable to store the servo position
 
 void setup() {
   
-  orecchie.attach(5);
-  collo.attach(3);
+  Ears.attach(5);
+  Head.attach(3);
 
   //ZERO CHECK
-  orecchie.write(95);
-  collo.write(95);
+  Ears.write(95);
+  Head.write(95);
   
 }
 
-void muoviTesta(uint8_t da, uint8_t aa, uint8_t vel) {
+void moveHead(uint8_t da, uint8_t aa, uint8_t vel) {
 
   if (da <= aa) {
     for (pos = da; pos <= aa; pos += 1) { // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
-      collo.write(pos);
+      Head.write(pos);
       delay(vel);                       // waits 15 ms for the servo to reach the position
     }
   }
   else {
     for (pos = da; pos >= aa; pos -= 1) { // goes from 180 degrees to 0 degrees
-      collo.write(pos);
+      Head.write(pos);
       delay(vel);                       // waits 15 ms for the servo to reach the position
     }
   }
@@ -35,18 +48,18 @@ void muoviTesta(uint8_t da, uint8_t aa, uint8_t vel) {
   
 }
 
-void muoviOrecchie(uint8_t da, uint8_t aa, uint8_t vel) {
+void moveEars(uint8_t da, uint8_t aa, uint8_t vel) {
 
   if (da <= aa) {
     for (pos = da; pos <= aa; pos += 1) { // goes from 0 degrees to 180 degrees
       // in steps of 1 degree
-      orecchie.write(pos);
+      Ears.write(pos);
       delay(vel);                       // waits 15 ms for the servo to reach the position
     }
   }
   else {
     for (pos = da; pos >= aa; pos -= 1) { // goes from 180 degrees to 0 degrees
-      orecchie.write(pos);
+      Ears.write(pos);
       delay(vel);                       // waits 15 ms for the servo to reach the position
     }
   }
@@ -56,59 +69,66 @@ void muoviOrecchie(uint8_t da, uint8_t aa, uint8_t vel) {
 
 void loop() {
 
-  muoviTesta(95,110, 50);
-  delay(1000);
-  muoviTesta(110,130, 50);
-  delay(2000);
-  muoviTesta(130,95, 5);
-  delay(3000);
-  muoviTesta(95,30, 5);
-  delay(2000);
-
-  muoviOrecchie(85,125, 5);
-  delay(1000);
-  muoviOrecchie(125,85, 5);
+  //INITIAL 
+  moveEars(minEar,maxEar, 5);
+  moveHead(95,60, 5);
   delay(500);
-  muoviOrecchie(85,125, 5);
-  delay(100);
-  muoviOrecchie(125,85, 5);
+  moveEars(maxEar,minEar, 5);
+  moveHead(60,95, 30);
+  delay(300);
+  moveHead(95,130, 30);
 
-  muoviTesta(30,110,50);
-
-  muoviOrecchie(85,125, 5);
-  delay(100);
-  muoviOrecchie(125,85, 5);
-  muoviOrecchie(85,125, 5);
-  delay(100);
-  muoviOrecchie(125,85, 5);
-
-  muoviTesta(110,30,5);
   delay(2000);
-  muoviTesta(30,95,30);
+  moveHead(130,95, 5);
+  delay(3000);
+  moveHead(95,30, 5);
+  delay(2000);
 
-  muoviOrecchie(85,125, 5);
-  delay(100);
-
-  muoviTesta(95,110, 5);
+  moveEars(minEar,maxEar, 5);
   delay(1000);
-  muoviTesta(110,130, 50);
+  moveEars(maxEar,minEar, 5);
+  delay(500);
+  moveEars(minEar,maxEar, 5);
+  delay(100);
+  moveEars(maxEar,minEar, 5);
+
+  moveHead(30,110,50);
+
+  moveEars(minEar,maxEar, 5);
+  delay(100);
+  moveEars(maxEar,minEar, 5);
+  moveEars(minEar,maxEar, 5);
+  delay(100);
+  moveEars(maxEar,minEar, 5);
+
+  moveHead(110,30,5);
   delay(2000);
-  muoviTesta(130,95, 5);
+  moveHead(30,95,30);
+
+  moveEars(minEar,maxEar, 5);
+  delay(100);
+  
+  moveHead(95,110, 5);
+  delay(1000);
+  moveHead(110,130, 50);
+  delay(2000);
+  moveHead(130,95, 5);
   delay(3000);
 
-  muoviOrecchie(85,125, 5);
+  // LAST EAR FAST BLINKS
+  moveEars(minEar,maxEar, 5);
   delay(100);
-  muoviOrecchie(125,85, 5);
-  muoviOrecchie(85,125, 5);
+  moveEars(maxEar,minEar, 5);
+  moveEars(minEar,maxEar, 5);
   delay(100);
-  muoviOrecchie(125,85, 5);
-  muoviOrecchie(85,125, 5);
+  moveEars(maxEar,minEar, 5);
+  moveEars(minEar,maxEar, 5);
   delay(100);
-  muoviOrecchie(125,85, 5);
-  muoviOrecchie(85,125, 5);
+  moveEars(maxEar,minEar, 5);
+  moveEars(minEar,maxEar, 5);
   delay(100);
-  muoviOrecchie(125,85, 5);
-  muoviOrecchie(125,85, 50);
+  moveEars(maxEar,minEar, 5);
+  moveEars(maxEar,minEar, 50);  //SLOW EAR MOVEMENT
   delay(100);
 
  
