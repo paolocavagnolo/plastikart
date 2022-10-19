@@ -1,4 +1,4 @@
-//HOMME - VERSION 1.0
+//HOMME - VERSION 1.1
 
 /*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
   
@@ -30,20 +30,19 @@ int i, j, w, zz,hh;
 
 void setup() {
 
+  digitalWrite(3, LOW);
   pinMode(3, OUTPUT);
   digitalWrite(3, LOW);
-
-  Serial.begin(9600);
 
   pixels.begin();
   pixels.clear();
   pixels.show();
 
-  delay(100);
+  delay(50);
 
   digitalWrite(3, HIGH);
 
-  delay(200);
+  delay(50);
 
   //FLASH
 
