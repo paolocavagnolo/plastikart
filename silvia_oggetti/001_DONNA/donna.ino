@@ -1,4 +1,4 @@
-//FEMME - VERSION 1.0
+//FEMME - VERSION 1.1
 
 /*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
 
@@ -29,32 +29,31 @@ int i, j, w, zz, hh;
 
 void setup() {
 
+  digitalWrite(3, LOW);
   pinMode(3, OUTPUT);
   digitalWrite(3, LOW);
-
-  Serial.begin(9600);
 
   pixels.begin();
   pixels.clear();
   pixels.show();
 
-  delay(100);
+  delay(50);
 
   digitalWrite(3, HIGH);
 
-  delay(200);
+  delay(50);
 
   //FLASH
 
-//  for (zz = 0; zz < 1; zz++) {
-//    for (hh = 0; hh < NUMPIXELS; hh++) {
-//      pixels.setPixelColor(hh, pixels.Color(255, 0, 0));
-//    }
-//    pixels.show();
-//    delay(500);
-//    pixels.clear();
-//    pixels.show();
-//  }
+  //  for (zz = 0; zz < 1; zz++) {
+  //    for (hh = 0; hh < NUMPIXELS; hh++) {
+  //      pixels.setPixelColor(hh, pixels.Color(255, 0, 0));
+  //    }
+  //    pixels.show();
+  //    delay(500);
+  //    pixels.clear();
+  //    pixels.show();
+  //  }
 
 
 }
@@ -75,13 +74,16 @@ void loop() {
 
   if (millis() > 14000) {
     if (firstB) {
-      for (hh = 255; hh > 0; hh--) {
-        for (zz = 0; zz < NUMPIXELS; zz++) {
-          pixels.setPixelColor(zz, pixels.Color(hh, 0, 0));
+      for (hh = 255; hh >= 0; hh = hh - 2) {
+        for (zz = 0; zz < FLOWPIXELS; zz++) {
+          if ((zz+i) % 5 == 0) {
+            pixels.setPixelColor(zz, pixels.Color(hh, 0, 0));
+          }
         }
         pixels.show();
       }
-
+      pixels.clear();
+      pixels.show();
       firstB = false;
     }
 
