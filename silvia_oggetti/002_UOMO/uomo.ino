@@ -1,4 +1,4 @@
-//HOMME - VERSION 1.1
+//HOMME - VERSION 1.2
 
 /*  Code written by Paolo Cavagnolo for FREITAG - 17/10/2022
   
@@ -10,9 +10,9 @@
     3 - Pulsing of the leds - FADE
 */
 
-#define BEAM_SPEED 85   //50 FAST - 100 SLOW
-#define CIRC_SPEED 120  //80 FAST - 160 SLOW
-#define FADE_SPEED 2    //1 FAST  - 3 SLOW
+#define BEAM_SPEED 85       //50 FAST - 100 SLOW
+#define CIRC_SPEED 120      //80 FAST - 160 SLOW
+#define FADE_SPEED 7700     //5000 FAST  - 9000 SLOW
 
 #define BRIGHT 150      //255 MAX BRIGHTNESS (ONLY DURING FADE PART)
 
@@ -136,7 +136,7 @@ void circ() {
 
 void fade() {
 
-  if ((micros() - dt_fade) > 7700) {
+  if ((micros() - dt_fade) > FADE_SPEED) {
 
     dt_fade = micros();
 
