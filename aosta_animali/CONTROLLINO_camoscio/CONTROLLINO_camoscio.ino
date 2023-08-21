@@ -5,8 +5,6 @@
 #define stepDir CONTROLLINO_D1
 #define stepEnable CONTROLLINO_D2
 
-#define dcPin CONTROLLINO_D5
-
 #define esPin CONTROLLINO_A1
 #define startPin CONTROLLINO_A0
 
@@ -15,13 +13,6 @@ void setup() {
 
   pinMode(stepEnable,OUTPUT);
   digitalWrite(stepEnable,LOW);
-
-  pinMode(dcPin, OUTPUT);
-  digitalWrite(dcPin, LOW);
-
-  
-  pinMode(CONTROLLINO_D6,OUTPUT);
-  digitalWrite(CONTROLLINO_D6,LOW);
 
   stepper.setMaxSpeed(100);
   stepper.setAcceleration(100);
@@ -35,16 +26,6 @@ void setup() {
   
   stepper.setCurrentPosition(0);
 
-  //SU VELOCE
-    stepper.setMaxSpeed(3000);
-    stepper.setAcceleration(1000);
-    stepper.moveTo(-180);
-    while(stepper.distanceToGo() < 0) {       
-      stepper.run();
-    }
-
-  digitalWrite(CONTROLLINO_D6,LOW);
-  
 }
 
 unsigned long t = 0;
@@ -144,9 +125,7 @@ void loop() {
       stepper.run();
     }
 
-
+  } else {
+    digitalWrite(stepEnable,HIGH);
   }
-
-  
- 
 }
