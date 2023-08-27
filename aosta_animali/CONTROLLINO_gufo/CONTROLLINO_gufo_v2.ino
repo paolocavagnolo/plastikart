@@ -18,9 +18,13 @@ AccelStepper stepper(AccelStepper::DRIVER, stepPulse, stepDir);
 
 void setup() {
 
+  delay(1000);
+  
   pinMode(stepPulse,OUTPUT);
   pinMode(stepDir,OUTPUT);
   pinMode(stepEnable,OUTPUT);
+
+  digitalWrite(stepEnable,LOW);
 
   stepper.setMaxSpeed(100);
   stepper.setAcceleration(100);
@@ -32,6 +36,8 @@ void setup() {
     
   }
 
+  delay(1000);
+
   stepper.setCurrentPosition(0);
 
   stepper.setMaxSpeed(200);
@@ -42,7 +48,8 @@ void setup() {
   while(stepper.distanceToGo() != 0) {       
     stepper.run(); 
   } 
-  
+
+  digitalWrite(stepEnable,HIGH);
   
 }
 
