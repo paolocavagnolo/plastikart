@@ -9,6 +9,7 @@
 #define startPin CONTROLLINO_A0
 
 AccelStepper stepper(AccelStepper::DRIVER, stepPulse, stepDir);
+
 void setup() {
 
   pinMode(stepEnable, OUTPUT);
