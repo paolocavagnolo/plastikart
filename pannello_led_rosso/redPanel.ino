@@ -1,5 +1,3 @@
-// ESP32 DEV KIT
-
 #include <EEPROM.h>
 #define EEPROM_SIZE 2000
 #define E_ADD_1 100
@@ -91,6 +89,8 @@ int caso = 0;
 unsigned long tChange = 0;
 bool change = false;
 
+uint8_t bVal_8 = 0;
+
 void setup() {
   delay(1000);
   Serial.begin(115200);
@@ -106,22 +106,13 @@ void setup() {
     init_enc(i);
   }
   encVal[0] = EEPROM.read(adds[0]);
-  enc[0].setCount(encVal[0]);
+  enc[0].setCount(encVal[0] / 4);
   oldEnc[0] = encVal[0];
 
-  hue = encVal[0]/4-32;
+  hue = encVal[0] / 4 - 32;
   maxB = EEPROM.read(adds[1]);
   cp10s = EEPROM.read(adds[2]);
   caso = EEPROM.read(adds[3]);
-  Serial.print(hue);
-  Serial.print(",");
-  Serial.print(maxB);
-  Serial.print(",");
-  Serial.print(cp10s);
-  Serial.print(",");
-  Serial.print(caso);
-  Serial.println();
-
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS)
     .setCorrection(TypicalLEDStrip);
@@ -167,7 +158,7 @@ void loop() {
     encVal[0] = EEPROM.read(adds[state]);
 
     oldEnc[0] = encVal[0];
-    enc[0].setCount(encVal[0]);
+    enc[0].setCount(encVal[0] / encStep);
   }
 
   if (encVal[0] != oldEnc[0]) {
@@ -177,12 +168,7 @@ void loop() {
 
     if (state == 0) {
       encStep = 4;
-      
-      hue = encVal[0]/4-32;
-      
-      Serial.print(encVal[0]);
-      Serial.print("-");
-      Serial.println(hue);
+      hue = encVal[0] / 4 - 32;
     }
     if (state == 1) {
       encStep = 3;
@@ -202,7 +188,7 @@ void loop() {
   pulse();
 
   if (change) {
-    if ((millis() - tChange) > 5000) {
+    if ((millis() - tChange) > 2000) {
       change = false;
       EEPROM.write(adds[state], encVal[0]);
       EEPROM.commit();
@@ -231,12 +217,13 @@ void pulse() {
   if (((millis() - tPulse) > 10) && (millis() - dT) > 50) {
     tPulse = millis();
     FastLED.clear();
+
     fill_solid(leds, NUM_LEDS, CHSV(hue, 255, maxB));
 
-    if (cp10s > 0) {
-      steps = cp10s * (255 * 2) / 8000;
+    if ((cp10s < 250) && (cp10s > 0)) {
+      steps = cp10s * (350 * 2) / 8000;
 
-      if ((brightVal >= 255) || (brightVal <= 0)) {
+      if ((brightVal >= 350) || (brightVal <= 0)) {
         direction = !direction;
       }
 
@@ -246,21 +233,28 @@ void pulse() {
         brightVal = brightVal - steps;
       }
 
-      if (brightVal > 255) {
-        brightVal = 255;
-      }
-      if (brightVal < 0) {
+      if (brightVal > 350) {
+        brightVal = 350;
+      } else if (brightVal > 255) {
+        bVal_8 = 255;
+      } else if (brightVal < 0) {
         brightVal = 0;
+        bVal_8 = 0;
+      } else {
+        bVal_8 = int(brightVal);
       }
 
-      FastLED.setBrightness(dim8_raw(int(brightVal)));
+
+
+
+      FastLED.setBrightness(dim8_raw(bVal_8));
     } else {
       FastLED.setBrightness(dim8_raw(int(255)));
     }
 
     if (caso > 0) {
-      long endT = map(caso, 0, 255, 3000, 150);
-      long startT = map(caso, 0, 255, 1000, 50);
+      long endT = map(caso, 0, 255, 5000, 150);
+      long startT = map(caso, 0, 255, 1500, 50);
       long tt = random(startT, endT);
       if ((millis() - tCaso) > tt) {
         tCaso = millis();
