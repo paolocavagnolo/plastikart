@@ -95,6 +95,8 @@ unsigned long tFPS = 0;
 unsigned long tMove = 0;
 uint8_t colorIndex[NUM_LEDS];
 long dMove = 0;
+int loopIdx = 0;
+bool dirIdx = false;
 
 DEFINE_GRADIENT_PALETTE(heatmap_gp){
   0, 255, 10, 0,   //orange
@@ -102,7 +104,15 @@ DEFINE_GRADIENT_PALETTE(heatmap_gp){
   255, 255, 0, 5,  //red
 };
 
+DEFINE_GRADIENT_PALETTE(heatmap_bl){
+  0, 255, 10, 0,   //orange
+  80, 0, 0, 0,     //black
+  220, 0, 0, 0,    //black
+  255, 255, 0, 5,  //red
+};
+
 CRGBPalette16 myPal = heatmap_gp;
+CRGBPalette16 myPalBlack = heatmap_bl;
 
 void setup() {
   delay(1000);
@@ -214,7 +224,7 @@ void loop() {
       cp10s = encVal[0];
     }
     if (state == 3) {
-      encStep = 10;
+      encStep = 4;
       caso = encVal[0];
     }
     oldEnc[0] = encVal[0];
@@ -225,24 +235,6 @@ void loop() {
   if ((micros() - tMove) > dMove) {
     tMove = micros();
     Fire();
-  }
-
-  if (caso > 0) {
-    long endT = map(caso, 0, 255, 5000, 150);
-    long startT = map(caso, 0, 255, 1500, 50);
-    long tt = random(startT, endT);
-    if ((millis() - tCaso) > tt) {
-      tCaso = millis();
-      if (tt % 2 == 0) {
-        int mH = map(caso, 0, 255, 0, -10);
-        int MH = map(caso, 0, 255, 0, 10);
-        fill_solid(leds, NUM_LEDS, CHSV(hue + random(mH, MH), 255, 255));
-        dT = millis();
-      } else {
-        FastLED.clear();
-        dT = millis();
-      }
-    }
   }
 
   if ((millis() - tFPS) > 33) {
@@ -276,69 +268,16 @@ void readEnc() {
 }
 
 
-void pulse() {
-
-  if (((millis() - tPulse) > 10) && (millis() - dT) > 50) {
-    tPulse = millis();
-    FastLED.clear();
-
-    fill_solid(leds, NUM_LEDS, CHSV(hue, 255, maxB));
-
-    if ((cp10s < 250) && (cp10s > 0)) {
-      steps = cp10s * (350 * 2) / 8000;
-
-      if ((brightVal >= 350) || (brightVal <= 0)) {
-        direction = !direction;
-      }
-
-      if (direction) {
-        brightVal = brightVal + steps;
-      } else {
-        brightVal = brightVal - steps;
-      }
-
-      if (brightVal > 350) {
-        brightVal = 350;
-      } else if (brightVal > 255) {
-        bVal_8 = 255;
-      } else if (brightVal < 0) {
-        brightVal = 0;
-        bVal_8 = 0;
-      } else {
-        bVal_8 = int(brightVal);
-      }
-
-      FastLED.setBrightness(dim8_raw(bVal_8));
-    } else {
-      FastLED.setBrightness(dim8_raw(int(255)));
-    }
-
-    if (caso > 0) {
-      long endT = map(caso, 0, 255, 5000, 150);
-      long startT = map(caso, 0, 255, 1500, 50);
-      long tt = random(startT, endT);
-      if ((millis() - tCaso) > tt) {
-        tCaso = millis();
-        if (tt % 2 == 0) {
-          int mH = map(caso, 0, 255, 0, -10);
-          int MH = map(caso, 0, 255, 0, 10);
-          fill_solid(leds, NUM_LEDS, CHSV(hue + random(mH, MH), 255, 255));
-          dT = millis();
-        } else {
-          FastLED.clear();
-          dT = millis();
-        }
-      }
-    }
-
-    FastLED.show();
-  }
-}
 
 void Fire() {
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    leds[i] = ColorFromPalette(myPal, colorIndex[i]);
+    if (caso > 0) {
+      leds[i] = blend(ColorFromPalette(myPal, colorIndex[i]), ColorFromPalette(myPalBlack, colorIndex[i]), caso);
+    } else {
+      leds[i] = ColorFromPalette(myPal, colorIndex[i]);
+    }
   }
+
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
     if (leds[i].r != 0) {
       if (hue > 0) {
@@ -348,7 +287,16 @@ void Fire() {
       }
     }
   }
+
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
     colorIndex[i]++;
+  }
+  if (loopIdx < 255) {
+    loopIdx++;
+  } else {
+    loopIdx = 0;
+    for (uint16_t i = 0; i < NUM_LEDS; i++) {
+      colorIndex[i] += random(15);
+    }
   }
 }
