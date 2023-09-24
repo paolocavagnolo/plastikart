@@ -93,10 +93,9 @@ uint8_t bVal_8 = 0;
 
 void setup() {
   delay(1000);
-  Serial.begin(115200);
-  delay(1000);
 
   pinMode(btnPin, INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   EEPROM.begin(EEPROM_SIZE);
 
   // INIT ENCODER
@@ -120,6 +119,8 @@ void setup() {
 
   FastLED.clear();
   FastLED.show();
+
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop() {
@@ -153,12 +154,30 @@ void loop() {
     if (state > 3) {
       state = 0;
     }
-    Serial.println(state);
 
     encVal[0] = EEPROM.read(adds[state]);
 
-    oldEnc[0] = encVal[0];
+    if (state == 0) {
+      encStep = 4;
+      hue = encVal[0] / 4 - 32;
+    }
+    if (state == 1) {
+      encStep = 3;
+      maxB = encVal[0];
+    }
+    if (state == 2) {
+      encStep = 3;
+      cp10s = encVal[0];
+    }
+    if (state == 3) {
+      encStep = 10;
+      caso = encVal[0];
+    }
+
     enc[0].setCount(encVal[0] / encStep);
+
+    oldEnc[0] = encVal[0];
+    
   }
 
   if (encVal[0] != oldEnc[0]) {
@@ -243,9 +262,6 @@ void pulse() {
       } else {
         bVal_8 = int(brightVal);
       }
-
-
-
 
       FastLED.setBrightness(dim8_raw(bVal_8));
     } else {
