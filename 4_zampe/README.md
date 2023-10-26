@@ -1,5 +1,7 @@
 # PARTE UNO: CONFIGURAZIONE CONTROLLINO MEGA
 
+Testo di esempio
+
 ## Blocco dei finecorsa
 
 ```c
