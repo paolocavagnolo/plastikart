@@ -1,207 +1,172 @@
 // ARDUINO UNO R3
 
-#include <AccelStepper.h>
+#include "ppm.h"
+#include "RunningAverage.h"
 
-#define UART2_TX_PIN (18u)  // Pin A4
-#define UART2_RX_PIN (19u)  // Pin A5
+RunningAverage LM(40);
+RunningAverage RM(40);
 
-// Instantiate the Serial2 class
-UART _UART2_(UART2_TX_PIN, UART2_RX_PIN);  // Makes Serial2 available on pin A4 Tx, A5 Tx
+#define DT 920
 
-#define T 500
-#define maxLong 2147483646
+// PPM channel layout (update for your situation)
+#define THROTTLE 1
+#define ROLL 2
+#define PITCH 3
+#define YAW 4
+#define SWITCH3WAY_1 5
+#define POT 6
 
-uint8_t btnPin[] = { A0, A1, A2, A3 };
-
-#define LMP 12
-#define LMD 13
-#define LME 11
-
-#define RMP 8
-#define RMD 7
-#define RME 9
-
-#define maxSpeed 8000
-#define maxAcc 1000
-
-AccelStepper LM(AccelStepper::DRIVER, LMP, LMD);
-AccelStepper RM(AccelStepper::DRIVER, RMP, RMD);
-
-char buf[7];
-
-int readline(int readch, char *buffer, int len) {
-  static int pos = 0;
-  int rpos;
-
-  if (readch > 0) {
-    switch (readch) {
-      case '\r':  // Ignore CR
-        break;
-      case '\n':  // Return on new-line
-        rpos = pos;
-        pos = 0;  // Reset position index ready for next time
-        return rpos;
-      default:
-        if (pos < len - 1) {
-          buffer[pos++] = readch;
-          buffer[pos] = 0;
-        }
-    }
-  }
-  return 0;
-}
+// Loop interval time
+long interval = 100;
+unsigned long previousMillis = 0;
 
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
+  // Start the serial port to display data
+  Serial.begin(115200);
 
-  pinMode(LME, OUTPUT);
-  pinMode(RME, OUTPUT);
-  digitalWrite(LME, LOW);
-  digitalWrite(RME, LOW);
-
-  Serial.begin(9600);
-  Serial2.begin(115200);
-
-  LM.setMaxSpeed(8000);
-  LM.setAcceleration(1000);
-  LM.setCurrentPosition(0);
-
-  RM.setMaxSpeed(8000);
-  RM.setAcceleration(1000);
-  RM.setCurrentPosition(0);
+  // Start the PPM function on PIN 2
+  ppm.begin(2, false);
 }
 
-bool fB[] = { false, false, false, false };
-bool P[] = { false, false, false, false };
-bool R[] = { false, false, false, false };
-unsigned long dbB[] = { 0, 0, 0, 0 };
+short throttle;
+short roll;
+short pitch;
+short yaw;
+short switch3way_1;
+short pot;
 
-uint8_t Lspeed = 0;
-uint8_t Rspeed = 0;
+int S = 0;
+// -1 - F/S
+// 0 - manual
+// 1 - fwd
+// 2 - bwd
 
-bool remote = false;
+int Lspeed = 0;
+int Rspeed = 0;
+int Lstraight = 0;
+int Rstraight = 0;
+int Lturn = 0;
+int Rturn = 0;
+
+char old_S;
+int ALspeed;
+int ARspeed;
+int old_Lspeed;
+int old_Rspeed;
+
 bool change = false;
-bool firstMan = true;
-
-int LMspeed = 0;
-int RMspeed = 0;
-
-char msg[4];
 
 void loop() {
+  // Interval at which the PPM is updated
 
-  LM.run();
-  RM.run();
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
 
-  if (readline(Serial2.read(), buf, 7) > 0) {
-    if (buf[0] != 'X') {
-      remote = true;
-      change = true;
+    // Acquiring all the channels values
+    throttle = ppm.read_channel(THROTTLE);
+    roll = ppm.read_channel(ROLL);
+    pitch = ppm.read_channel(PITCH);
+    yaw = ppm.read_channel(YAW);
+    switch3way_1 = ppm.read_channel(SWITCH3WAY_1);
+    pot = ppm.read_channel(POT);
 
-      msg[0] = buf[0];
-      msg[1] = buf[1];
-      msg[2] = buf[2];
-      msg[3] = buf[3];
-
-      sscanf(msg, "%02X%02X", &Lspeed, &Rspeed);
-
-      LMspeed = (Lspeed - 128) * maxSpeed / 128;
-      RMspeed = (Rspeed - 128) * maxSpeed / 128;
-
+    if ((throttle < DT)) {
+      S = -1;
     } else {
-
-      remote = false;
-      Lspeed = 0;
-      Rspeed = 0;
-    }
-  }
-
-  if (remote) {
-    if (change) {
-      change = false;
-
-      if (abs(Lspeed - 128) > 1) {
-        LM.setMaxSpeed(LMspeed);
-        LM.move(((LMspeed > 0) - (LMspeed < 0)) * maxLong);
+      if (switch3way_1 < 1200) {
+        S = 1;
+      } else if (switch3way_1 > 1800) {
+        S = 2;
       } else {
-        LM.stop();
-        LM.setCurrentPosition(0);
-      }
-
-      if (abs(Rspeed - 128) > 1) {
-        RM.setMaxSpeed(RMspeed);
-        RM.move(((RMspeed > 0) - (RMspeed < 0)) * maxLong);
-      } else {
-        RM.stop();
-        RM.setCurrentPosition(0);
+        S = 0;
       }
     }
-  } else {
-    // check buttons
-    for (uint8_t i = 0; i < 4; i++) {
-      if (!fB[i]) {
-        if ((millis() - dbB[i]) > 200) {
-          if (analogRead(btnPin[i]) < T) {
-            fB[i] = true;
-            P[i] = true;
-            dbB[i] = millis();
-          }
+
+    if (S == -1) {
+      Serial.println("X");
+      interval = 1000;
+    } else {
+      interval = 40;
+      if (S == 0) {
+
+        if (pitch > 1600) {
+          Lstraight = map(pitch, 1600, 2012, 129, 255);
+          Rstraight = map(pitch, 1600, 2012, 129, 255);
+        } else if (pitch < 1400) {
+          Lstraight = map(pitch, 1400, 988, 128, 0);
+          Rstraight = map(pitch, 1400, 988, 128, 0);
+        } else {
+          Lstraight = 128;
+          Rstraight = 128;
         }
-      } else {
-        if ((millis() - dbB[i]) > 200) {
-          if (analogRead(btnPin[i]) > T) {
-            R[i] = true;
-            fB[i] = false;
-            dbB[i] = millis();
-          }
+
+        if (roll > 1600) {
+          Lturn = -map(roll, 1600, 2012, 0, 128);
+          Rturn = map(roll, 1600, 2012, 0, 128);
+        } else if (roll < 1400) {
+          Lturn = map(roll, 1400, 988, 0, 128);
+          Rturn = -map(roll, 1400, 988, 0, 128);
+        } else {
+          Lturn = 0;
+          Rturn = 0;
         }
       }
-    }
 
-    // action if pressed
-    for (uint8_t i = 0; i < 4; i++) {
-      if (P[i]) {
-        Serial.print("pressed ");
-        Serial.println(i);
-      }
-      if (P[3]) {
-        RM.move(maxLong);
-      }
-      if (P[0]) {
-        RM.move(-maxLong);
-      }
-      if (P[1]) {
-        LM.move(maxLong);
-      }
-      if (P[2]) {
-        LM.move(-maxLong);
-      }
-      P[i] = false;
-    }
+      if (S == 1) {
+        uint8_t v = map(pot, 988, 2012, 0, 127);
+        Lstraight = 128 + v;
+        Rstraight = 128 - v;
 
-    // action if released
-    for (uint8_t i = 0; i < 4; i++) {
-      if (R[i]) {
-        Serial.print("released ");
-        Serial.println(i);
+        if (roll > 1600) {
+          Rturn = map(roll, 1600, 2012, 0, 48);
+        } else if (roll < 1400) {
+          Lturn = -map(roll, 1400, 988, 0, 48);
+        } else {
+          Lturn = 0;
+          Rturn = 0;
+        }
       }
-      if (R[3]) {
-        RM.stop();
+
+      if (S == 2) {
+        uint8_t v = map(pot, 988, 2012, 0, 127);
+        Rstraight = 128 + v;
+        Lstraight = 128 - v;
+
+        if (roll > 1600) {
+          Rturn = -map(roll, 1600, 2012, 0, 48);
+        } else if (roll < 1400) {
+          Lturn = map(roll, 1400, 988, 0, 48);
+        } else {
+          Lturn = 0;
+          Rturn = 0;
+        }
       }
-      if (R[0]) {
-        RM.stop();
+
+      Lspeed = Lstraight + Lturn;
+      Rspeed = Rstraight + Rturn;
+
+      if (Lspeed > 255) {
+        Lspeed = 255;
+      } else if (Lspeed < 0) {
+        Lspeed = 0;
       }
-      if (R[2]) {
-        LM.stop();
+
+      if (Rspeed > 255) {
+        Rspeed = 255;
+      } else if (Rspeed < 0) {
+        Rspeed = 0;
       }
-      if (R[1]) {
-        LM.stop();
-      }
-      R[i] = false;
+
+      LM.addValue(Lspeed);
+      RM.addValue(Rspeed);
+
+      ALspeed = LM.getAverage();
+      ARspeed = RM.getAverage();
+
+      char buffer[5];
+      sprintf(buffer, "%02X%02X", ALspeed, ARspeed);
+      Serial.println(buffer);
     }
   }
 }
