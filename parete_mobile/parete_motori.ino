@@ -1,3 +1,5 @@
+// ARDUINO UNO R4 MINIMA
+
 #include <AccelStepper.h>
 
 #define UART2_TX_PIN (18u)  // Pin A4
