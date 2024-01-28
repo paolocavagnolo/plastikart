@@ -51,30 +51,6 @@ int readline(int readch, char *buffer, int len) {
   return 0;
 }
 
-void setup() {
-  // put your setup code here, to run once:
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
-
-  pinMode(LME, OUTPUT);
-  pinMode(RME, OUTPUT);
-  digitalWrite(LME, LOW);
-  digitalWrite(RME, LOW);
-
-  Serial.begin(9600);
-  Serial2.begin(115200);
-
-  LM.setMaxSpeed(4000);
-  LM.setAcceleration(1000);
-  LM.setCurrentPosition(0);
-
-  RM.setMaxSpeed(4000);
-  RM.setAcceleration(1000);
-  RM.setCurrentPosition(0);
-}
-
 bool fB[] = { false, false, false, false };
 unsigned long dbB[] = { 0, 0, 0, 0 };
 
@@ -95,6 +71,58 @@ bool R[] = { false, false, false, false };
 
 bool primaX = false;
 bool primaM = false;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
+
+  pinMode(LME, OUTPUT);
+  pinMode(RME, OUTPUT);
+  digitalWrite(LME, HIGH);
+  digitalWrite(RME, HIGH);
+
+  Serial.begin(9600);
+  Serial2.begin(115200);
+
+  LM.setMaxSpeed(4000);
+  LM.setAcceleration(1000);
+  LM.setCurrentPosition(0);
+
+  RM.setMaxSpeed(4000);
+  RM.setAcceleration(1000);
+  RM.setCurrentPosition(0);
+
+  bool check_zero = false;
+
+  while (!check_zero) {
+    if (readline(Serial2.read(), buf, 7) > 0) {
+      if (buf[0] != 'X') {
+
+        msg[0] = buf[0];
+        msg[1] = buf[1];
+        msg[2] = buf[2];
+        msg[3] = buf[3];
+
+        sscanf(msg, "%02X%02X", &Lspeed, &Rspeed);
+
+        LMspeed = (Lspeed - 128) * maxSpeed / 128;
+        RMspeed = (Rspeed - 128) * maxSpeed / 128;
+
+        if ((LMspeed == 0) && (RMspeed == 0)) {
+          check_zero = true;
+        } 
+
+      } else {
+        check_zero = true;
+      }
+    }
+  }
+}
+
+
 
 void loop() {
 
