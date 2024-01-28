@@ -21,7 +21,7 @@ uint8_t btnPin[] = { A0, A1, A2, A3 };
 #define RMD 7
 #define RME 9
 
-#define maxSpeed 8000
+#define maxSpeed 4000
 #define maxAcc 1000
 
 AccelStepper LM(AccelStepper::DRIVER, LMP, LMD);
@@ -66,11 +66,11 @@ void setup() {
   Serial.begin(9600);
   Serial2.begin(115200);
 
-  LM.setMaxSpeed(8000);
+  LM.setMaxSpeed(4000);
   LM.setAcceleration(1000);
   LM.setCurrentPosition(0);
 
-  RM.setMaxSpeed(8000);
+  RM.setMaxSpeed(4000);
   RM.setAcceleration(1000);
   RM.setCurrentPosition(0);
 }
@@ -98,17 +98,16 @@ bool primaM = false;
 
 void loop() {
 
-
-
   if (readline(Serial2.read(), buf, 7) > 0) {
     if (buf[0] != 'X') {
+
       if (primaM) {
         primaM = false;
-        LM.setMaxSpeed(8000);
+        LM.setMaxSpeed(4000);
         LM.setAcceleration(1000);
         LM.setCurrentPosition(0);
 
-        RM.setMaxSpeed(8000);
+        RM.setMaxSpeed(4000);
         RM.setAcceleration(1000);
         RM.setCurrentPosition(0);
       }
@@ -126,6 +125,18 @@ void loop() {
 
       LMspeed = (Lspeed - 128) * maxSpeed / 128;
       RMspeed = (Rspeed - 128) * maxSpeed / 128;
+
+      if (LMspeed == 0) {
+        digitalWrite(LME, HIGH);
+      } else {
+        digitalWrite(LME, LOW);
+      }
+
+      if (RMspeed == 0) {
+        digitalWrite(RME, HIGH);
+      } else {
+        digitalWrite(RME, LOW);
+      }
 
     } else {
 
