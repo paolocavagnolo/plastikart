@@ -3,8 +3,8 @@
 #include "ppm.h"
 #include "RunningAverage.h"
 
-RunningAverage LM(40);
-RunningAverage RM(40);
+RunningAverage LM(50);
+RunningAverage RM(50);
 
 #define DT 920
 
@@ -87,7 +87,7 @@ void loop() {
       Serial.println("X");
       interval = 1000;
     } else {
-      interval = 40;
+      interval = 50;
       if (S == 0) {
 
         if (pitch > 1600) {
