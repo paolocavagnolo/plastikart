@@ -21,8 +21,8 @@ uint8_t btnPin[] = { A0, A1, A2, A3 };
 #define RMD 7
 #define RME 9
 
-#define maxSpeed 4000
-#define maxAcc 1000
+#define maxSpeed 3000
+#define maxAcc 350
 
 AccelStepper LM(AccelStepper::DRIVER, LMP, LMD);
 AccelStepper RM(AccelStepper::DRIVER, RMP, RMD);
@@ -87,12 +87,12 @@ void setup() {
   Serial.begin(9600);
   Serial2.begin(115200);
 
-  LM.setMaxSpeed(4000);
-  LM.setAcceleration(1000);
+  LM.setMaxSpeed(maxSpeed);
+  LM.setAcceleration(maxAcc);
   LM.setCurrentPosition(0);
 
-  RM.setMaxSpeed(4000);
-  RM.setAcceleration(1000);
+  RM.setMaxSpeed(maxSpeed);
+  RM.setAcceleration(maxAcc);
   RM.setCurrentPosition(0);
 
   bool check_zero = false;
@@ -131,12 +131,12 @@ void loop() {
 
       if (primaM) {
         primaM = false;
-        LM.setMaxSpeed(4000);
-        LM.setAcceleration(1000);
+        LM.setMaxSpeed(maxSpeed);
+        LM.setAcceleration(maxAcc);
         LM.setCurrentPosition(0);
 
-        RM.setMaxSpeed(4000);
-        RM.setAcceleration(1000);
+        RM.setMaxSpeed(maxSpeed);
+        RM.setAcceleration(maxAcc);
         RM.setCurrentPosition(0);
       }
 
@@ -170,12 +170,12 @@ void loop() {
 
       if (primaX) {
         primaX = false;
-        LM.setMaxSpeed(4000);
-        LM.setAcceleration(1000);
+        LM.setMaxSpeed(maxSpeed);
+        LM.setAcceleration(maxAcc);
         LM.setCurrentPosition(0);
 
-        RM.setMaxSpeed(4000);
-        RM.setAcceleration(1000);
+        RM.setMaxSpeed(maxSpeed);
+        RM.setAcceleration(maxAcc);
         RM.setCurrentPosition(0);
       }
 
