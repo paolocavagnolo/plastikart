@@ -100,7 +100,6 @@ void setup() {
           beat = true;
         }
       }
-
     }
 
   } else if (analogRead(BTN_A) < 100) {
@@ -141,6 +140,7 @@ void setup() {
     if (stepper) {
       stepper->setDirectionPin(dirPinStepper, true, 100);
       stepper->setEnablePin(enablePinStepper);
+      stepper->enableOutputs();
 
       stepper->setSpeedInUs(50);
       stepper->setAcceleration(7000);
@@ -148,9 +148,7 @@ void setup() {
 
     delay(1000);
     stepper->setCurrentPosition(LIM_LOW);
-    stepper->disableOutputs();
   }
-
 
   dmxVal = DMXSerial.read(startChannel);
 
@@ -158,9 +156,7 @@ void setup() {
     dmxVal = DMXSerial.read(startChannel);
     delay(100);
   }
-
-  stepper->setCurrentPosition(LIM_LOW);
-  stepper->enableOutputs();
+  
 }
 
 
