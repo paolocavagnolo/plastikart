@@ -6,7 +6,7 @@ long LIM_UPP = 150; // 200 sono 45 gradi
 // 493 - Asta 1
 // 494 - Asta 2
 // 495 - Asta 3
-const int startChannel = 493;
+const int startChannel = 496;
 
 ///////////////////////////////////////////////////////////////
 // DA QUI IN POI PRIMA DI CAMBIARE CHIEDIMI
