@@ -140,6 +140,9 @@ void setup() {
 
   } 
 
+  stepper->setSpeedInUs(50);
+  stepper->setAcceleration(7000);
+
   // PER ENTRARE NEL LOOP IL SEGNALE DMX DEVE ESSERE 0
 
   dmxVal = DMXSerial.read(startChannel);
