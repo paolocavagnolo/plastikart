@@ -84,7 +84,7 @@ void setup() {
       if (beat) {
         if ((millis() - tLoopBack) > 3000) {
           tLoopBeat = millis();
-          stepper->setAcceleration(150000);
+          stepper->setAcceleration(10000);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_UPP);
@@ -128,7 +128,7 @@ void setup() {
     EEPROM.put(E_ADD, LIM_UPP);
 
     stepper->setSpeedInUs(50);
-    stepper->setAcceleration(7000);
+    stepper->setAcceleration(1000);
 
     tLoopBack = millis();
     stepper->moveTo(LIM_LOW);
@@ -183,11 +183,11 @@ void loop() {
 
     if (!btnEn) {
       if (dmxVal == 255) {
-        stepper->setAcceleration(150000);
+        stepper->setAcceleration(10000);
       } else if (dmxVal == 0) {
         stepper->setAcceleration(2000);
       } else {
-        stepper->setAcceleration(7000);
+        stepper->setAcceleration(5000);
       }
       stepper->applySpeedAcceleration();
     }
