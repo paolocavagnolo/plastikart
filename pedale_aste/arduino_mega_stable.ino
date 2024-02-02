@@ -19,7 +19,7 @@ FastAccelStepper *stepper = NULL;
 // 494 - Asta 2
 // 495 - Asta 3
 
-const int startChannel = 495;
+const int startChannel = 496;
 
 long LIM_UPP = 255 * 2;
 long LIM_LOW = 0;
@@ -181,10 +181,15 @@ void loop() {
       btnEn = false;
     }
 
-    if (dmxVal == 255) {
-      stepper->setAcceleration(150000);
-    } else {
-      stepper->setAcceleration(7000);
+    if (!btnEn) {
+      if (dmxVal == 255) {
+        stepper->setAcceleration(150000);
+      } else if (dmxVal == 0) {
+        stepper->setAcceleration(50000);
+      } else {
+        stepper->setAcceleration(7000);
+      }
+      stepper->applySpeedAcceleration();
     }
 
     stepper->applySpeedAcceleration();
@@ -209,6 +214,11 @@ void loop() {
         if (analogRead(BTN_A) > 1000) {
           fB_A = false;
           dbB_A = millis();
+
+          stepper->setAcceleration(1000);
+          stepper->applySpeedAcceleration();
+          delay(10);
+          stepper->moveTo(LIM_LOW);
         }
       }
     }
@@ -219,10 +229,10 @@ void loop() {
           fB_B = true;
           dbB_B = millis();
 
-          stepper->setAcceleration(1000);
+          stepper->setAcceleration(150000);
           stepper->applySpeedAcceleration();
           delay(10);
-          stepper->moveTo(LIM_LOW);
+          stepper->moveTo(LIM_UPP);
         }
       }
     } else {
@@ -230,6 +240,11 @@ void loop() {
         if (analogRead(BTN_B) > 1000) {
           fB_B = false;
           dbB_B = millis();
+
+          stepper->setAcceleration(50000);
+          stepper->applySpeedAcceleration();
+          delay(10);
+          stepper->moveTo(LIM_LOW);
         }
       }
     }
