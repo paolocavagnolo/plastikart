@@ -1,6 +1,6 @@
 // CIAO MICHELE, QUESTE LE 2 VARIABILI CHE PUOI CONTROLLARE:
-#define TIME_ZERO 8 //secondi
-long LIM_UPP = 150; // 200 sono 45 gradi
+#define TIME_ZERO 10  //secondi
+long LIM_UPP = 150;   // 200 sono 45 gradi
 
 // 496 - Gatto / Pedale
 // 493 - Asta 1
@@ -30,7 +30,7 @@ FastAccelStepper *stepper = NULL;
 long LIM_LOW = 0;
 
 #define BTN_A A1
-#define IN_POS A4
+#define BTN_B A4
 
 long dmxVal = 0;
 
@@ -67,7 +67,7 @@ void setup() {
   delay(100);
 
   // INITIAL ZERO
-  
+
   // init motor
   stepper->setDirectionPin(dirPinStepper, true, 100);
   stepper->setEnablePin(enablePinStepper);
@@ -96,7 +96,7 @@ void setup() {
   // set position to -50
   stepper->setCurrentPosition(LIM_LOW);
 
-  if (analogRead(BTN_A) < 100) {
+  if ((analogRead(BTN_A) < 100) && (analogRead(BTN_B) < 100)) {
 
     unsigned long tLoopBeat = 0;
     unsigned long tLoopBack = 0;
@@ -111,7 +111,7 @@ void setup() {
     while (true) {
 
       if (beat) {
-        if ((millis() - tLoopBack) > 3000) {
+        if ((millis() - tLoopBack) > 2000) {
           tLoopBeat = millis();
           stepper->setAcceleration(150000);
           stepper->applySpeedAcceleration();
@@ -120,7 +120,7 @@ void setup() {
           beat = false;
         }
       } else {
-        if ((millis() - tLoopBeat) > 2000) {
+        if ((millis() - tLoopBeat) > 1000) {
           tLoopBack = millis();
           stepper->setAcceleration(7000);
           stepper->applySpeedAcceleration();
@@ -130,8 +130,7 @@ void setup() {
         }
       }
     }
-
-  } 
+  }
 
   stepper->setSpeedInUs(50);
   stepper->setAcceleration(7000);
@@ -144,7 +143,6 @@ void setup() {
     dmxVal = DMXSerial.read(startChannel);
     delay(100);
   }
-
 }
 
 
@@ -171,6 +169,8 @@ void loop() {
 
     if (dmxVal == 255) {
       stepper->setAcceleration(150000);
+    } else if (dmxVal == 0) {
+      stepper->setAcceleration(50000);
     } else {
       stepper->setAcceleration(7000);
     }
@@ -206,11 +206,34 @@ void loop() {
       }
     }
 
+    if (!fB_B) {
+      if ((millis() - dbB_B) > 200) {
+        if (analogRead(BTN_B) < 100) {
+          fB_B = true;
+          dbB_B = millis();
+
+          stepper->setAcceleration(150000);
+          stepper->applySpeedAcceleration();
+          delay(10);
+          stepper->moveTo(LIM_UPP);
+        }
+      }
+    } else {
+      if ((millis() - dbB_B) > 200) {
+        if (analogRead(BTN_B) > 1000) {
+          fB_B = false;
+          dbB_B = millis();
+
+          stepper->setAcceleration(50000);
+          stepper->applySpeedAcceleration();
+          delay(10);
+          stepper->moveTo(LIM_LOW);
+        }
+      }
+    }
 
   } else {
 
     stepper->moveTo(map(dmxVal, 0, 255, LIM_LOW, LIM_UPP));
-
   }
-
 }
