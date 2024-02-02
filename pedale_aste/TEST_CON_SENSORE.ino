@@ -92,6 +92,9 @@ void setup() {
   stepper->runForward();
   tZ = millis();
   while ((millis() - tZ) < 300) {};
+  stepper->stopMove();
+  tZ = millis();
+  while ((millis() - tZ) < 1000) {};
 
   // set position to 0
   stepper->setCurrentPosition(LIM_LOW);
