@@ -91,10 +91,12 @@ void setup() {
   // stop
   stepper->stopMove();
   tZ = millis();
-  while ((millis() - tZ) < 500) {};
+  while ((millis() - tZ) < 1000) {};
 
   // set position to 0
   stepper->setCurrentPosition(LIM_LOW);
+  tZ = millis();
+  while ((millis() - tZ) < 1000) {};
 
   // move forward
   stepper->moveTo(35);
