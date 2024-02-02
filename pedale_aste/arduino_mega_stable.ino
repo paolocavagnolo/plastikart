@@ -241,7 +241,7 @@ void loop() {
           fB_B = false;
           dbB_B = millis();
 
-          stepper->setAcceleration(10000);
+          stepper->setAcceleration(2000);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_LOW);
