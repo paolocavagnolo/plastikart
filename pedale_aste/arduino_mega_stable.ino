@@ -93,7 +93,7 @@ void setup() {
       } else {
         if ((millis() - tLoopBeat) > 2000) {
           tLoopBack = millis();
-          stepper->setAcceleration(7000);
+          stepper->setAcceleration(2000);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_LOW);
@@ -185,7 +185,7 @@ void loop() {
       if (dmxVal == 255) {
         stepper->setAcceleration(150000);
       } else if (dmxVal == 0) {
-        stepper->setAcceleration(50000);
+        stepper->setAcceleration(2000);
       } else {
         stepper->setAcceleration(7000);
       }
