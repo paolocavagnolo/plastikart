@@ -94,14 +94,7 @@ void setup() {
   while ((millis() - tZ) < 500) {};
 
   // set position to -50
-  stepper->setCurrentPosition(LIM_LOW-20);
-
-  // go forward to 0
-  stepper->moveTo(LIM_LOW);
-  tZ = millis();
-  while ((millis() - tZ) < 500) {};
-
-
+  stepper->setCurrentPosition(LIM_LOW);
 
   if (analogRead(BTN_A) < 100) {
 
