@@ -93,7 +93,7 @@ void setup() {
   while ((millis() - tZ) < 500) {};
 
   // set position to -50
-  stepper->setCurrentPosition(LIM_LOW-50);
+  stepper->setCurrentPosition(LIM_LOW-20);
 
   // go forward to 0
   stepper->moveTo(LIM_LOW);
