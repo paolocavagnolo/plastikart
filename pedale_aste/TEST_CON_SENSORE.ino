@@ -97,7 +97,7 @@ void setup() {
 
   // go forward to 0
   stepper->moveTo(LIM_LOW);
-  unsigned long tZ = millis();
+  tZ = millis();
   while ((millis() - tZ) < 500) {};
 
 
