@@ -1,5 +1,5 @@
 // CIAO MICHELE, QUESTE LE 2 VARIABILI CHE PUOI CONTROLLARE:
-
+#define TIME_ZERO 3 //secondi
 long LIM_UPP = 150; // 200 sono 45 gradi
 
 // 496 - Gatto / Pedale
@@ -85,11 +85,12 @@ void setup() {
   stepper->runBackward();
 
   // wait for the signal
-  while (analogRead(IN_POS) > 500) {};
+  unsigned long tZ = millis();
+  while ((millis() - tZ) < TIME_ZERO * 1000) {};
 
   // stop
   stepper->stopMove();
-  unsigned long tZ = millis();
+  tZ = millis();
   while ((millis() - tZ) < 500) {};
 
   // set position to -50
