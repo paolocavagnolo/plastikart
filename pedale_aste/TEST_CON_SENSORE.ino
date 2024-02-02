@@ -167,15 +167,16 @@ void loop() {
       btnEn = false;
     }
 
-    if (dmxVal == 255) {
-      stepper->setAcceleration(150000);
-    } else if (dmxVal == 0) {
-      stepper->setAcceleration(50000);
-    } else {
-      stepper->setAcceleration(7000);
+    if (!btnEn) {
+      if (dmxVal == 255) {
+        stepper->setAcceleration(150000);
+      } else if (dmxVal == 0) {
+        stepper->setAcceleration(50000);
+      } else {
+        stepper->setAcceleration(7000);
+      }
+      stepper->applySpeedAcceleration();
     }
-
-    stepper->applySpeedAcceleration();
   }
 
   if (btnEn) {
