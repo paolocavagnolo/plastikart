@@ -21,7 +21,7 @@ FastAccelStepper *stepper = NULL;
 
 const int startChannel = 496;
 
-long LIM_UPP = 255 * 2;
+long LIM_UPP = 200;
 long LIM_LOW = 0;
 
 #define BTN_A A1
@@ -48,11 +48,11 @@ void setup() {
   long upp_buffer = 0;
   EEPROM.get(E_ADD, upp_buffer);
 
-  if ((upp_buffer > 0) && (upp_buffer < 3200)) {
-    LIM_UPP = upp_buffer;
-  } else {
-    EEPROM.put(E_ADD, LIM_UPP);
-  }
+  //if ((upp_buffer > 0) && (upp_buffer < 3200)) {
+  //  LIM_UPP = upp_buffer;
+  //} else {
+  //  EEPROM.put(E_ADD, LIM_UPP);
+  //}
 
   DMXSerial.init(DMXReceiver);
   delay(200);
