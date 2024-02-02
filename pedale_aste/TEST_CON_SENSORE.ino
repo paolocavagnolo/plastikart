@@ -1,5 +1,5 @@
 // CIAO MICHELE, QUESTE LE 2 VARIABILI CHE PUOI CONTROLLARE:
-#define TIME_ZERO 3 //secondi
+#define TIME_ZERO 8 //secondi
 long LIM_UPP = 150; // 200 sono 45 gradi
 
 // 496 - Gatto / Pedale
