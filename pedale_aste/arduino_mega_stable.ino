@@ -1,3 +1,26 @@
+// 496 - Gatto / Pedale
+// 493 - Asta 1
+// 494 - Asta 2
+// 495 - Asta 3
+#define DMX_CHANNEL 496
+
+// 1600 E' UN GIRO DI MOTORE
+// 800 MEZZO GIRO.. ETC..
+#define DISTANZA 400
+
+// 100 E' UN VALORE DI ACCELERAZIONE BASSO
+// 1000 MEDIO-BASSO
+// 10000 VELOCE
+// 100000 VELOCISSIMO
+// 200000 ULTRA
+#define FAST_ACC_FWD 20000
+#define FAST_ACC_BWD 10000
+
+#define SLOW_ACC_FWD 2000
+#define SLOW_ACC_BWD 1000
+
+/////////////////////////////////
+
 #include <EEPROM.h>
 
 #define E_ADD 100
@@ -13,15 +36,9 @@ FastAccelStepper *stepper = NULL;
 
 #include <DMXSerial.h>
 
-// 496 - Gatto / Pedale
+const int startChannel = DMX_CHANNEL;
 
-// 493 - Asta 1
-// 494 - Asta 2
-// 495 - Asta 3
-
-const int startChannel = 496;
-
-long LIM_UPP = 200;
+long LIM_UPP = DISTANZA;
 long LIM_LOW = 0;
 
 #define BTN_A A1
@@ -45,8 +62,8 @@ void setup() {
   Serial.begin(9600);
   delay(200);
 
-  long upp_buffer = 0;
-  EEPROM.get(E_ADD, upp_buffer);
+  //long upp_buffer = 0;
+  //EEPROM.get(E_ADD, upp_buffer);
 
   //if ((upp_buffer > 0) && (upp_buffer < 3200)) {
   //  LIM_UPP = upp_buffer;
@@ -61,94 +78,17 @@ void setup() {
   stepper = engine.stepperConnectToPin(stepPinStepper);
   delay(100);
 
-  if ((analogRead(BTN_A) < 100) && (analogRead(BTN_B) < 100)) {
-
-    unsigned long tLoopBeat = 0;
-    unsigned long tLoopBack = 0;
-
-    bool beat = true;
-
-    // INFINITE TEST LOOP
-    if (stepper) {
-      stepper->setDirectionPin(dirPinStepper, true, 100);
-      stepper->setEnablePin(enablePinStepper);
-      stepper->enableOutputs();
-
-      stepper->setSpeedInUs(50);
-      stepper->setAcceleration(7000);
-      stepper->setCurrentPosition(LIM_LOW);
-    }
-
-    while (true) {
-
-      if (beat) {
-        if ((millis() - tLoopBack) > 3000) {
-          tLoopBeat = millis();
-          stepper->setAcceleration(10000);
-          stepper->applySpeedAcceleration();
-          delay(10);
-          stepper->moveTo(LIM_UPP);
-          beat = false;
-        }
-      } else {
-        if ((millis() - tLoopBeat) > 2000) {
-          tLoopBack = millis();
-          stepper->setAcceleration(2000);
-          stepper->applySpeedAcceleration();
-          delay(10);
-          stepper->moveTo(LIM_LOW);
-          beat = true;
-        }
-      }
-    }
-
-  } else if (analogRead(BTN_A) < 100) {
-
-    unsigned long tLoopBack = 0;
-
-    if (stepper) {
-      stepper->setDirectionPin(dirPinStepper, true, 100);
-      stepper->setEnablePin(enablePinStepper);
-
-      stepper->setSpeedInUs(40000);
-      stepper->setAcceleration(1000);
-    }
-
+  if (stepper) {
+    stepper->setDirectionPin(dirPinStepper, true, 100);
+    stepper->setEnablePin(enablePinStepper);
     stepper->enableOutputs();
-    stepper->runForward();
-
-    while (analogRead(BTN_A) < 100) {
-      Serial.println(stepper->getCurrentPosition());
-      delay(100);
-    }
-
-    stepper->stopMove();
-    delay(200);
-    LIM_UPP = stepper->getCurrentPosition();
-    EEPROM.put(E_ADD, LIM_UPP);
 
     stepper->setSpeedInUs(50);
     stepper->setAcceleration(1000);
-
-    tLoopBack = millis();
-    stepper->moveTo(LIM_LOW);
-
-    while ((millis() - tLoopBack) < 2000) {};
-
-  } else {
-
-    if (stepper) {
-      stepper->setDirectionPin(dirPinStepper, true, 100);
-      stepper->setEnablePin(enablePinStepper);
-      stepper->enableOutputs();
-
-      stepper->setSpeedInUs(50);
-      stepper->setAcceleration(7000);
-    }
-
-    delay(1000);
-    stepper->setCurrentPosition(LIM_LOW);
   }
+
+  delay(1000);
+  stepper->setCurrentPosition(LIM_LOW);
 
   dmxVal = DMXSerial.read(startChannel);
 
@@ -183,16 +123,14 @@ void loop() {
 
     if (!btnEn) {
       if (dmxVal == 255) {
-        stepper->setAcceleration(10000);
+        stepper->setAcceleration(FAST_ACC_FWD);
       } else if (dmxVal == 0) {
-        stepper->setAcceleration(2000);
+        stepper->setAcceleration(FAST_ACC_BWD);
       } else {
-        stepper->setAcceleration(5000);
+        stepper->setAcceleration(SLOW_ACC_FWD);
       }
       stepper->applySpeedAcceleration();
     }
-
-    stepper->applySpeedAcceleration();
   }
 
   if (btnEn) {
@@ -203,7 +141,7 @@ void loop() {
           fB_A = true;
           dbB_A = millis();
 
-          stepper->setAcceleration(1000);
+          stepper->setAcceleration(SLOW_ACC_FWD);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_UPP);
@@ -215,7 +153,7 @@ void loop() {
           fB_A = false;
           dbB_A = millis();
 
-          stepper->setAcceleration(1000);
+          stepper->setAcceleration(SLOW_ACC_BWD);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_LOW);
@@ -229,7 +167,7 @@ void loop() {
           fB_B = true;
           dbB_B = millis();
 
-          stepper->setAcceleration(10000);
+          stepper->setAcceleration(FAST_ACC_FWD);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_UPP);
@@ -241,7 +179,7 @@ void loop() {
           fB_B = false;
           dbB_B = millis();
 
-          stepper->setAcceleration(2000);
+          stepper->setAcceleration(FAST_ACC_BWD);
           stepper->applySpeedAcceleration();
           delay(10);
           stepper->moveTo(LIM_LOW);
