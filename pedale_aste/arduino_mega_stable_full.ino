@@ -19,6 +19,10 @@
 #define SLOW_ACC_FWD 2000
 #define SLOW_ACC_BWD 1000
 
+//TEMPO CHE ASPETTA PRIMA DI TORNARE INDIETRO
+#define FAST_PAUSA 1000
+#define SLOW_PAUSA 2000
+
 /////////////////////////////////
 
 #include <EEPROM.h>
@@ -83,7 +87,7 @@ void setup() {
     stepper->setEnablePin(enablePinStepper);
     stepper->enableOutputs();
 
-    stepper->setSpeedInUs(50);
+    stepper->setSpeedInUs(20);
     stepper->setAcceleration(1000);
   }
 
@@ -99,6 +103,7 @@ void setup() {
   
 }
 
+unsigned long tMove = 0;
 
 void loop() {
 
@@ -143,8 +148,17 @@ void loop() {
 
           stepper->setAcceleration(SLOW_ACC_FWD);
           stepper->applySpeedAcceleration();
-          delay(10);
           stepper->moveTo(LIM_UPP);
+
+          while(stepper->isRunning()) {};
+          
+          tMove = millis();
+          while ((millis() - tMove) > SLOW_PAUSA) {};
+
+          stepper->setAcceleration(SLOW_ACC_BWD);
+          stepper->applySpeedAcceleration();
+          stepper->moveTo(LIM_LOW);
+          
         }
       }
     } else {
@@ -153,10 +167,6 @@ void loop() {
           fB_A = false;
           dbB_A = millis();
 
-          stepper->setAcceleration(SLOW_ACC_BWD);
-          stepper->applySpeedAcceleration();
-          delay(10);
-          stepper->moveTo(LIM_LOW);
         }
       }
     }
@@ -169,8 +179,17 @@ void loop() {
 
           stepper->setAcceleration(FAST_ACC_FWD);
           stepper->applySpeedAcceleration();
-          delay(10);
           stepper->moveTo(LIM_UPP);
+
+          while(stepper->isRunning()) {};
+
+          tMove = millis();
+          while ((millis() - tMove) > FAST_PAUSA) {};
+
+          stepper->setAcceleration(FAST_ACC_BWD);
+          stepper->applySpeedAcceleration();
+          stepper->moveTo(LIM_LOW);
+          
         }
       }
     } else {
@@ -179,10 +198,6 @@ void loop() {
           fB_B = false;
           dbB_B = millis();
 
-          stepper->setAcceleration(FAST_ACC_BWD);
-          stepper->applySpeedAcceleration();
-          delay(10);
-          stepper->moveTo(LIM_LOW);
         }
       }
     }
