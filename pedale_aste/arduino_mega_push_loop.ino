@@ -158,7 +158,7 @@ void loop() {
           dbB_A = millis();
         }
       }
-    } else {
+    } else if (loop_S == 3) {
       if ((millis() - dbB_A) > 200) {
         if (analogRead(BTN_A) > 1000) {
           fB_A = false;
@@ -177,7 +177,7 @@ void loop() {
           dbB_B = millis();
         }
       }
-    } else {
+    } else if (loop_S == 3) {
       if ((millis() - dbB_B) > 200) {
         if (analogRead(BTN_B) > 1000) {
           fB_B = false;
