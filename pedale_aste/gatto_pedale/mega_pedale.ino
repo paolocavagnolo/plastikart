@@ -13,11 +13,11 @@
 // 10000 VELOCE
 // 100000 VELOCISSIMO
 // 200000 ULTRA
-#define FAST_ACC_FWD 20000
-#define FAST_ACC_BWD 10000
+#define FAST_ACC_FWD 70000
+#define FAST_ACC_BWD 35000
 
-#define SLOW_ACC_FWD 2000
-#define SLOW_ACC_BWD 1000
+#define SLOW_ACC_FWD 1000
+#define SLOW_ACC_BWD 500
 
 #define DMX_ACC_FWD 10000
 #define DMX_ACC_BWD 5000
@@ -26,7 +26,7 @@
 #define PAUSA_LOOP 2000
 
 // PAUSA BATTENDO, quando l'asta e' contro il telo. quanto tempo sta contro il telo? in millisecondi
-#define PAUSA_BATT 1000
+#define PAUSA_BATT 3
 
 /////////////////////////////////
 
