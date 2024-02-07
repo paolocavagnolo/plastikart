@@ -132,7 +132,8 @@ void loop() {
     if (firstDMX) {
       firstDMX = false;
       stepper->setAcceleration(DMX_ACC);
-      stepper->applySpeedAcceleration();  
+      stepper->applySpeedAcceleration();
+    }
   }
 
   if (btnEn) {
