@@ -98,7 +98,7 @@ void setup() {
     stepper->setEnablePin(enablePinStepper);
     stepper->enableOutputs();
 
-    stepper->setSpeedInUs(50);
+    stepper->setSpeedInUs(100);
     stepper->setAcceleration(1000);
   }
 
