@@ -19,7 +19,8 @@
 #define SLOW_ACC_FWD 1000
 #define SLOW_ACC_BWD 500
 
-#define DMX_ACC 30000
+#define DMX_ACC_FAST 30000
+#define DMX_ACC_SLOW 1000
 
 // PAUSA TRA UN CICLO E L'ALTRO, in millisecondi. 500 sono mezzo secondo
 #define PAUSA_LOOP 2000
@@ -70,7 +71,6 @@ bool loop_P = true;
 bool loop_E = false;
 
 unsigned long loop_T = 0;
-bool firstDMX = true;
 
 void setup() {
 
@@ -129,9 +129,14 @@ void loop() {
       btnEn = false;
     }
 
-    if (firstDMX) {
-      firstDMX = false;
-      stepper->setAcceleration(DMX_ACC);
+    if (!btnEn) {
+      if (dmxVal == 255) {
+        stepper->setAcceleration(DMX_ACC_FAST);
+      } else if (dmxVal == 0) {
+        stepper->setAcceleration(DMX_ACC_FAST);
+      } else {
+        stepper->setAcceleration(DMX_ACC_SLOW);
+      }
       stepper->applySpeedAcceleration();
     }
   }
