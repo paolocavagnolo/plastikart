@@ -71,8 +71,7 @@ bool loop_P = true;
 bool loop_E = false;
 
 unsigned long loop_T = 0;
-
-long oldDMX = 0;
+bool firstDMX = true;
 
 void setup() {
 
@@ -118,13 +117,6 @@ void setup() {
 
 void loop() {
 
-  // END STOPS
-  pos = stepper->getCurrentPosition();
-
-  if ((pos > (LIM_UPP)) || (pos < (LIM_LOW))) {
-    stepper->forceStop();
-  }
-
   // DMX
   if ((millis() - tDMX) > 15) {
     tDMX = millis();
@@ -133,22 +125,15 @@ void loop() {
 
     if (DMXSerial.noDataSince() > 2000) {
       btnEn = true;
+      firstDMX = true;
     } else {
       btnEn = false;
     }
 
-    if (!btnEn) {
-
-      if (dmxVal > oldDMX) {
-        stepper->setAcceleration(DMX_ACC_FWD);
-      } else {
-        stepper->setAcceleration(DMX_ACC_BWD);
-      }
-      oldDMX = dmxVal;
-      stepper->applySpeedAcceleration();
-      
-    }
-    
+    if (firstDMX) {
+      firstDMX = false;
+      stepper->setAcceleration(DMX_ACC);
+      stepper->applySpeedAcceleration();  
   }
 
   if (btnEn) {
