@@ -19,8 +19,7 @@
 #define SLOW_ACC_FWD 1000
 #define SLOW_ACC_BWD 500
 
-#define DMX_ACC_FWD 10000
-#define DMX_ACC_BWD 5000
+#define DMX_ACC 30000
 
 // PAUSA TRA UN CICLO E L'ALTRO, in millisecondi. 500 sono mezzo secondo
 #define PAUSA_LOOP 2000
