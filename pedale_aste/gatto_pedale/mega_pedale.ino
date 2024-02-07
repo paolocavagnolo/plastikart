@@ -124,7 +124,6 @@ void loop() {
 
     if (DMXSerial.noDataSince() > 2000) {
       btnEn = true;
-      firstDMX = true;
     } else {
       btnEn = false;
     }
