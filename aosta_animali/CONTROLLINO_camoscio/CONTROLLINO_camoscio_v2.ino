@@ -1,3 +1,8 @@
+// Camoscio V2
+// 22/07/2024
+
+
+
 #include <Controllino.h>
 #include <AccelStepper.h>
 
@@ -38,34 +43,26 @@ void loop() {
   if (!digitalRead(startPin)) {
 
     digitalWrite(stepEnable, HIGH);
+    delay(100);
 
   } else {
 
-    stepper.setMaxSpeed(100);
-    stepper.setAcceleration(40);
-
-    if (stepper.currentPosition() != 0) {
-      stepper.moveTo(0);
-      while (digitalRead(esPin)) {
-        stepper.moveTo(10000);
-        stepper.run();
-      }
-      stepper.setCurrentPosition(0);
-    }
+    digitalWrite(stepEnable, LOW);
+    delay(800);
 
     //SU VELOCE
     stepper.setMaxSpeed(2000);
     stepper.setAcceleration(1000);
-    stepper.moveTo(-180);
+    stepper.moveTo(-180*1.9);
     while (stepper.distanceToGo() < 0) {
       stepper.run();
     }
-    delay(2500);
+    delay(1000);
 
     //GIU META
     stepper.setMaxSpeed(12000);
     stepper.setAcceleration(12000);
-    stepper.moveTo(-150);
+    stepper.moveTo(-150*1.9);
     while (stepper.distanceToGo() > 0) {
       stepper.run();
     };
@@ -73,17 +70,17 @@ void loop() {
     //SU VELOCE
     stepper.setMaxSpeed(12000);
     stepper.setAcceleration(12000);
-    stepper.moveTo(-200);
+    stepper.moveTo(-200*1.9);
     while (stepper.distanceToGo() < 0) {
       stepper.run();
     }
 
-    delay(3000);
+    delay(500);
 
     //GIU META
     stepper.setMaxSpeed(100);
     stepper.setAcceleration(100);
-    stepper.moveTo(-100);
+    stepper.moveTo(-100*1.9);
     while (stepper.distanceToGo() > 0) {
       stepper.run();
     }
@@ -94,7 +91,7 @@ void loop() {
     //SU VELOCE
     stepper.setMaxSpeed(12000);
     stepper.setAcceleration(12000);
-    stepper.moveTo(-200);
+    stepper.moveTo(-200*1.9);
     while (stepper.distanceToGo() < 0) {
       stepper.run();
     }
@@ -116,10 +113,21 @@ void loop() {
     //SU VELOCE
     stepper.setMaxSpeed(3000);
     stepper.setAcceleration(1000);
-    stepper.moveTo(-180);
+    stepper.moveTo(-180*1.9);
     while (stepper.distanceToGo() < 0) {
       stepper.run();
     }
+
+    //GIU LENTO
+    stepper.setMaxSpeed(100);
+    stepper.setAcceleration(40);
+    while (digitalRead(esPin)) {
+      stepper.moveTo(10000);
+      stepper.run();
+    }
+    stepper.setCurrentPosition(0);
+
+    delay(2000);
 
   }
 }
