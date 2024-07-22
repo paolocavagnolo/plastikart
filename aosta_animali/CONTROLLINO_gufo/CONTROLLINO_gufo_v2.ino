@@ -1,3 +1,6 @@
+// Gufo v2
+// 22/07/2024
+
 #include <Controllino.h>
 #include <AccelStepper.h>
 
@@ -12,6 +15,7 @@
 #define stepEnable CONTROLLINO_D2
 
 #define esPin CONTROLLINO_A1
+#define startPin CONTROLLINO_A0
 
 AccelStepper stepper(AccelStepper::DRIVER, stepPulse, stepDir);
 void setup() {
@@ -33,18 +37,8 @@ void setup() {
 
   stepper.setCurrentPosition(0);
 
-  stepper.setMaxSpeed(700);
-  stepper.setAcceleration(700);
-
-  stepper.moveTo(370);
-
-  while (stepper.distanceToGo() != 0) {
-    stepper.run();
-  }
-
   digitalWrite(stepEnable, HIGH);
   
-
 }
 
 bool ggo = false;
@@ -52,35 +46,26 @@ unsigned long tt = 0;
 
 void loop() {
 
-  if ((millis() - tt) > (60000)) {
-    tt = millis();
-    ggo = true;
-  }
+  if (!digitalRead(startPin)) {
 
-  if (ggo) {
+    digitalWrite(stepEnable, HIGH);
+    delay(100);
+
+  } else {
+
     digitalWrite(stepEnable, LOW);
 
-    stepper.setMaxSpeed(200);
-    stepper.setAcceleration(200);
-    stepper.moveTo(10);
+    stepper.setMaxSpeed(100);
+    stepper.setAcceleration(100);
+    stepper.moveTo(340);
     while (stepper.distanceToGo() != 0) {
       stepper.run();
     }
 
     delay(2000);
 
-    stepper.setMaxSpeed(500);
-    stepper.setAcceleration(500);
-    stepper.moveTo(500);
-    while (stepper.distanceToGo() != 0) {
-      stepper.run();
-    }
-
-    delay(500);
-
-
-    stepper.setMaxSpeed(300);
-    stepper.setAcceleration(300);
+    stepper.setMaxSpeed(70);
+    stepper.setAcceleration(70);
     stepper.moveTo(700);
     while (stepper.distanceToGo() != 0) {
       stepper.run();
@@ -88,8 +73,8 @@ void loop() {
 
     delay(2000);
 
-    stepper.setMaxSpeed(600);
-    stepper.setAcceleration(600);
+    stepper.setMaxSpeed(100);
+    stepper.setAcceleration(100);
     stepper.moveTo(300);
     while (stepper.distanceToGo() != 0) {
       stepper.run();
@@ -98,8 +83,8 @@ void loop() {
     delay(2000);
 
 
-    stepper.setMaxSpeed(200);
-    stepper.setAcceleration(200);
+    stepper.setMaxSpeed(50);
+    stepper.setAcceleration(50);
     while (!digitalRead(esPin)) {
 
       stepper.moveTo(-10000);
@@ -110,20 +95,6 @@ void loop() {
 
     delay(4000);
 
-    stepper.setMaxSpeed(200);
-    stepper.setAcceleration(200);
-    stepper.moveTo(370);
-    while (stepper.distanceToGo() != 0) {
-      stepper.run();
-    }
-
-    delay(2000);
-    ggo = false;
-
-  }
-  else {
-    digitalWrite(stepEnable, HIGH);
-    delay(100);
   }
 
 }
