@@ -32,7 +32,7 @@ void loop() {
 
 
   if (gioco) {
-    if ((millis() - dt) > 207000) {
+    if ((millis() - dt) > 291000) {
       gioco = false;
       digitalWrite(RR4, LOW);
       digitalWrite(RR3, LOW);
@@ -47,14 +47,7 @@ void loop() {
         delay(500);
         digitalWrite(RR3, LOW);
         delay(500);
-        digitalWrite(RR3, HIGH);
-        delay(500);
-        digitalWrite(RR3, LOW);
-        delay(500);
-        digitalWrite(RR3, HIGH);
-        delay(500);
-        digitalWrite(RR3, LOW);
-        delay(500);
+        
         seq = false;
       }
       else {
